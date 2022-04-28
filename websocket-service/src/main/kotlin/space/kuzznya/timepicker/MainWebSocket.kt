@@ -12,18 +12,17 @@ import javax.enterprise.context.ApplicationScoped
 import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
-import kotlin.coroutines.CoroutineContext
 
 @ServerEndpoint("/ws/{id}/{event}", decoders = [DateVoteDecoder::class])
 @ApplicationScoped
 class MainWebSocket(
-    @Channel("vote-channel")
+    @Channel("votes")
     private val emitter: Emitter<DateVoteEvent>,
     private val sessionStore: SessionStore,
     private val vertx: Vertx
 ) {
 
-    private val sessions: MutableMap<UUID, SessionInfo> = mutableMapOf()
+    val sessions: MutableMap<UUID, SessionInfo> = mutableMapOf()
 
     private val mapper = ObjectMapper().findAndRegisterModules()
 
