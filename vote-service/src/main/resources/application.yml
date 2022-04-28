@@ -40,8 +40,8 @@ quarkus:
       eager-init: true
   container-image:
     image: ghcr.io/kuzznya/timepicker/vote-service:latest
-    username: kuzznya
-    password: ${GITHUB_TOKEN}
+    username: ${DOCKER_USERNAME}
+    password: ${DOCKER_PASSWORD}
 
 
 kafka:

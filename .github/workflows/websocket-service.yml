@@ -14,3 +14,6 @@ jobs:
         run: chmod +x gradlew
       - name: Build and push the image
         run: ./gradlew :websocket-service:build -Dquarkus.container-image.push=true
+        env:
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

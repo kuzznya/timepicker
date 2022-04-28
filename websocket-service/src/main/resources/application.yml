@@ -39,8 +39,8 @@ quarkus:
       enabled: false
   container-image:
     image: ghcr.io/kuzznya/timepicker/websocket-service:latest
-    username: kuzznya
-    password: ${GITHUB_TOKEN}
+    username: ${DOCKER_USERNAME}
+    password: ${DOCKER_PASSWORD}
 
 kafka:
   bootstrap:
