@@ -16,15 +16,17 @@ services:
 
   cassandra:
     image: bitnami/cassandra:3.11.4
+    container_name: cassandra
     ports:
       - 7000:7000
       - 9042:9042
     volumes:
       - cassandra-data:/bitnami
+      - ./cassandra:/docker-entrypoint-initdb.d
     environment:
       CASSANDRA_USER: cassandra
       CASSANDRA_PASSWORD: cassandra
-
+    restart: unless-stopped
 
   redis:
     image: redis:6.2.6

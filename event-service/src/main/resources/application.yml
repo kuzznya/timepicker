@@ -31,11 +31,13 @@ quarkus:
       enabled: false
   cassandra:
     contact-points: localhost:9042
-    local-datacenter: dc1
-    keyspace: k1
+    local-datacenter: datacenter1
+    keyspace: events
     auth:
       username: cassandra
       password: cassandra
+    init:
+      eager-init: true
 kafka:
   bootstrap:
     servers: localhost:9092
@@ -45,6 +47,11 @@ mp:
     incoming:
       vote-channel:
         topic: votes
+        connector: smallrye-kafka
+        key:
+          deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value:
+          deserializer: io.vertx.kafka.client.serialization.JsonObjectDeserializer
 
 "%dev":
   quarkus:

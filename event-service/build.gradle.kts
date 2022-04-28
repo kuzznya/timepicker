@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.allopen") version "1.6.10"
+    kotlin("kapt") version "1.6.10"
     id("io.quarkus")
 }
 
@@ -20,6 +21,8 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive")
     implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
     implementation("com.datastax.oss.quarkus:cassandra-quarkus-client")
+    kapt("com.datastax.oss.quarkus:cassandra-quarkus-mapper-processor:1.1.2")
+    implementation("com.datastax.oss:java-driver-mapper-runtime")
     implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-keycloak-authorization")
     implementation("io.quarkus:quarkus-config-yaml")
