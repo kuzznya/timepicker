@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  ports:
+    - port: 2181
+      name: zkport
+  selector:
+    app: redis
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: zookeeper
+          image: bitnami/zookeeper:3.8
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: 'yes'
+          ports:
+            - containerPort: 2181
+              name: zkport
+          volumeMounts:
+            - name: zk-data
+              mountPath: /bitnami
+  volumeClaimTemplates:
+    - metadata:
+        name: zk-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 500Mi

@@ -31,7 +31,7 @@ quarkus:
     devservices:
       enabled: false
   redis:
-    hosts: redis://localhost:6379
+    hosts: ${REDIS_URL:redis://localhost:6379}
     devservices:
       enabled: false
   kafka:
@@ -44,7 +44,7 @@ quarkus:
 
 kafka:
   bootstrap:
-    servers: localhost:9092
+    servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 mp:
   messaging:
