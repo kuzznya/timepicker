@@ -1,0 +1,55 @@
+quarkus:
+  application:
+    name: websocket-service
+  http:
+    port: ${PORT:8080}
+    cors:
+      ~: true
+      origins: '*'
+      methods: GET,POST,PUT,DELETE,OPTIONS
+      headers: '*'
+    auth:
+      permission:
+        ws:
+          paths: '/ws/*'
+          policy: permit
+        authenticated:
+          paths: '/*'
+          policy: authenticated
+          auth-mechanism: bearer
+  oidc:
+    auth-server-url: ${KEYCLOAK_URL:http://localhost:8000/auth/realms/timepicker}
+    application-type: service
+    client-id: timepicker-backend
+    credentials:
+      secret: bf6cfb18-c502-4ad0-af8a-fbf7802b4d82
+    tls:
+      verification: none
+  keycloak:
+    policy-enforcer:
+      enable: false
+    devservices:
+      enabled: false
+  redis:
+    hosts: redis://localhost:6379
+    devservices:
+      enabled: false
+  kafka:
+    devservices:
+      enabled: false
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+
+mp:
+  messaging:
+    outgoing:
+      vote-channel:
+        topic: votes
+
+"%dev":
+  quarkus:
+    log:
+      console:
+        json: false

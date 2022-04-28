@@ -1,0 +1,57 @@
+quarkus:
+  application:
+    name: auth-service
+  oidc:
+    auth-server-url: ${KEYCLOAK_URL:http://localhost:8000/auth/realms/timepicker}
+    application-type: web_app
+    client-id: timepicker-backend
+    credentials:
+      secret: bf6cfb18-c502-4ad0-af8a-fbf7802b4d82
+    authentication:
+      restore-path-after-redirect: true
+    logout:
+      path: /auth/logout
+      post-logout-path: /
+    tls:
+      verification: none
+  keycloak:
+    devservices:
+      enabled: false
+  http:
+    auth:
+      permission:
+        open:
+          paths: /*
+          policy: permit
+        authenticated:
+          paths: /auth/*
+          policy: authenticated
+          auth-mechanism: code
+        bearer:
+          paths: /hello/*
+          policy: authenticated
+          auth-mechanism: JWT
+
+mp:
+  jwt:
+    token:
+      header: Cookie
+      cookie: JWT
+    always-check-authorization: true
+smallrye:
+  jwt:
+    verify:
+      key:
+        # Workaround for HS256 algorithm to use jwt.secret,
+        # without this property io.smallrye.jwt.config.JWTAuthContextInfoProvider thinks that data is provided by other property and fails
+        location: http:none
+      algorithm: HS256
+
+jwt:
+  secret: someveryveryimportantsecretthatihavetoprovide
+  issued-by: http://localhost:8080
+
+%dev:
+  log:
+    console:
+      json: false
