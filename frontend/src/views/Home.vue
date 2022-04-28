@@ -32,9 +32,6 @@
         </b-row>
       </b-col>
     </b-row>
-
-    <b-button @click="connect">Connect</b-button>
-    <b-button @click="send">Send</b-button>
   </b-container>
 </template>
 
@@ -43,12 +40,7 @@ export default {
   name: 'Home',
 
   data: () => ({
-    ws: null,
-    id: null
   }),
-
-  async mounted() {
-  },
 
   computed: {
     authenticated() {
@@ -59,18 +51,6 @@ export default {
   methods: {
     authenticate() {
       this.$keycloak.login()
-    },
-
-    async connect() {
-      this.id = await this.$axios.post("http://localhost:4000/sessions").then(result => result.data)
-      this.ws = new WebSocket(`ws://localhost:4000/ws/${this.id}/${this.id}`)
-      this.ws.onmessage = function (event) {
-        console.log(event.data)
-      }
-    },
-
-    send() {
-      this.ws.send(JSON.stringify({event: this.id, date: '2022-01-01', state: 'VOTED'}))
     }
   }
 }

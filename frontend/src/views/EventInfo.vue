@@ -72,6 +72,8 @@ export default {
   },
 
   data: () => ({
+    ws: null,
+
     title: "",
     author: "",
 
@@ -123,6 +125,7 @@ export default {
 
   async mounted() {
     await this.loadEventInfo()
+    await this.setupWebSocket()
   },
 
   computed: {
@@ -144,15 +147,39 @@ export default {
       this.author = event.author
     },
 
+    async setupWebSocket() {
+      const sessionId = await this.$axios.post("http://localhost:4000/sessions").then(result => result.data)
+      this.ws = new WebSocket(`ws://localhost:4000/ws/${sessionId}/${this.id}`)
+      this.ws.onmessage = function (event) {
+        const stats = JSON.parse(event).statistics
+        console.log(stats)
+        this.chartData.labels = Object.keys(stats)
+        this.chartData.datasets[0].data = Object.values(stats)
+        const bestDate = Object.keys(stats).sort(date => stats[date])[0]
+        this.bestDates = [bestDate]
+      }
+      this.ws.onclose = function () {
+        this.setupWebSocket()
+      }
+    },
+
+    async send(date, state) {
+      if (this.ws == null || this.ws.readyState === WebSocket.CLOSED) await this.setupWebSocket()
+      this.ws.send(JSON.stringify({event: this.id, date: date, state: state}))
+    },
+
     onDayVoteClick(day) {
       const idx = this.days.findIndex(d => d.id === day.id);
+      console.log(day.id)
       if (idx >= 0) {
         this.days.splice(idx, 1);
+        this.send(day.id, 'UNVOTED')
       } else {
         this.days.push({
           id: day.id,
           date: day.date,
         });
+        this.send(day.id, 'VOTED')
       }
       this.voted = this.days.length > 0
     },
