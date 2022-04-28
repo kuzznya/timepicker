@@ -7,9 +7,10 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
-    - http:
+    - host: timepicker.kuzznya.space
+      http:
         paths:
-          - path: /events
+          - path: /api/events
             pathType: Prefix
             backend:
               service:

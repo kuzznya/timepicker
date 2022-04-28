@@ -1,0 +1,64 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    ingressClassName: "traefik"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    - host: timepicker.kuzznya.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/kuzznya/timepicker/frontend:master
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "8080"
+            - name: API_GATEWAY_PATH
+              value: "http://timepicker.kuzznya.space"
+          ports:
+            - containerPort: 8080

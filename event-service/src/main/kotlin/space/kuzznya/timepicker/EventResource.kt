@@ -1,5 +1,6 @@
 package space.kuzznya.timepicker
 
+import io.quarkus.security.Authenticated
 import io.smallrye.mutiny.Multi
 import org.eclipse.microprofile.jwt.JsonWebToken
 import java.util.UUID
@@ -9,7 +10,8 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 
-@Path("/events")
+@Path("/api/events")
+@Authenticated
 class EventResource(
     private val accessToken: JsonWebToken,
     private val eventService: EventService

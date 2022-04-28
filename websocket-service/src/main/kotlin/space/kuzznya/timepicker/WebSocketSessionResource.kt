@@ -1,12 +1,14 @@
 package space.kuzznya.timepicker
 
+import io.quarkus.security.Authenticated
 import org.eclipse.microprofile.jwt.JsonWebToken
 import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 
-@Path("/sessions")
+@Path("/api/ws/sessions")
+@Authenticated
 class WebSocketSessionResource(
     private val sessionStore: SessionStore
 ) {

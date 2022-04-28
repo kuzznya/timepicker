@@ -50,10 +50,10 @@ spec:
             - name: DB_DATABASE
               value: postgres
             - name: DB_USER
-              value: admin
+              value: postgres
             - name: DB_PASSWORD
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: secrets
                   key: KEYCLOAK_DB_PASSWORD
           ports:
@@ -95,7 +95,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: postgres
-          image: registry.gitlab.com/alpeconsulting/sap-access/postgres-db:master
+          image: postgres:13
           env:
             - name: POSTGRES_DB
               value: postgres

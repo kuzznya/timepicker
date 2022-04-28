@@ -29,7 +29,7 @@ export default {
       const confirmed = await this.$bvModal.msgBoxConfirm("Are sure want to delete the event?")
       if (!confirmed)
         return
-      await this.$axios.delete(`http://localhost:4100/events/${this.id}`).then(response => response.data)
+      await this.$axios.delete(`/api/events/${this.id}`).then(response => response.data)
       this.$emit('event-deleted')
     }
   }

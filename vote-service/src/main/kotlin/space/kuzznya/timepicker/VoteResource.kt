@@ -1,12 +1,14 @@
 package space.kuzznya.timepicker
 
+import io.quarkus.security.Authenticated
 import org.eclipse.microprofile.jwt.JsonWebToken
 import java.util.UUID
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 
-@Path("/votes")
+@Path("/api/votes")
+@Authenticated
 class VoteResource(
     private val accessToken: JsonWebToken,
     private val voteDao: VoteDao,

@@ -1,0 +1,24 @@
+name: 'frontend CI/CD'
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - frontend/**
+      - .github/workflows/frontend.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build container
+        run: docker build -t ghcr.io/kuzznya/timepicker/frontend:latest .
+        working-directory: frontend
+      - name: Login with docker
+        run: >
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login --username ${{ github.actor }}
+          --password-stdin ghcr.io
+      - name: Publish container
+        run: docker push ghcr.io/kuzznya/timepicker/frontend --all-tags

@@ -9,10 +9,14 @@ quarkus:
       methods: GET,POST,PUT,DELETE,OPTIONS
       headers: '*'
     auth:
-      authenticated:
-        paths: '/*'
-        policy: authenticated
-        auth-mechanism: bearer
+      permission:
+        health:
+          paths: '/q/health/*'
+          policy: permit
+        authenticated:
+          paths: '/*'
+          policy: authenticated
+          auth-mechanism: bearer
   oidc:
     auth-server-url: ${KEYCLOAK_URL:http://localhost:8000/auth/realms/timepicker}
     application-type: service
@@ -40,8 +44,8 @@ quarkus:
       eager-init: true
   container-image:
     image: ghcr.io/kuzznya/timepicker/vote-service:latest
-    username: ${DOCKER_USERNAME}
-    password: ${DOCKER_PASSWORD}
+    username: ${DOCKER_USERNAME:}
+    password: ${DOCKER_PASSWORD:}
 
 
 kafka:
@@ -73,6 +77,8 @@ mp:
 
 "%dev":
   quarkus:
+    http:
+      port: 4300
     log:
       console:
         json: false

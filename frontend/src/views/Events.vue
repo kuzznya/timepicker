@@ -22,6 +22,8 @@
 
 <script>
 import Event from "@/components/Event";
+import eventsApi from "@/api/events"
+
 export default {
   name: "Events",
   components: {Event},
@@ -36,13 +38,12 @@ export default {
 
   methods: {
     async addEvent(title) {
-      await this.$axios.post("http://localhost:4100/events", { title: title })
-        .then(response => response.data)
+      await eventsApi.addEvent({title: title})
       await this.updateEvents()
     },
 
     async updateEvents() {
-      this.events = await this.$axios.get("http://localhost:4100/events").then(response => response.data)
+      this.events = await eventsApi.getEvents()
     },
 
     async onEventDeleted() {

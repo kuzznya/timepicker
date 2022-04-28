@@ -9,7 +9,7 @@ spec:
     - port: 2181
       name: zkport
   selector:
-    app: redis
+    app: zookeeper
 
 ---
 

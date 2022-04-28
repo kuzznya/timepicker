@@ -1,18 +1,14 @@
 version: '3.8'
 
 services:
-#  db:
-#    image: postgres:13
-#    container_name: db
-#    environment:
-#      POSTGRES_DB: postgres
-#      POSTGRES_USER: admin
-#      POSTGRES_PASSWORD: password
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - db-data:/var/lib/postgresql/data
-#    restart: unless-stopped
+  gateway:
+    image: nginx
+    container_name: gateway
+    ports:
+      - 4000:80
+    volumes:
+      - ./local-gateway.nginx:/etc/nginx/templates/default.conf.template
+    restart: unless-stopped
 
   cassandra:
     image: bitnami/cassandra:3.11.4

@@ -13,7 +13,7 @@ import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
-@ServerEndpoint("/ws/{id}/{event}", decoders = [DateVoteDecoder::class])
+@ServerEndpoint("/api/ws/{id}/{event}", decoders = [DateVoteDecoder::class])
 @ApplicationScoped
 class MainWebSocket(
     @Channel("votes")

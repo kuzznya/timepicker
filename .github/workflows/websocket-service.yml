@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+    paths:
+      - websocket-service/**
+      - .github/workflows/websocket-service.yml
 
 jobs:
   build:

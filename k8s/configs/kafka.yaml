@@ -44,9 +44,9 @@ spec:
             - name: KAFKA_CFG_LISTENERS
               value: CLIENT://:9092,INTERNAL://:9093
             - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: CLIENT://kafka:9092,INTERNAL://kafka:9093
+              value: CLIENT://kafka:9092,INTERNAL://localhost:9093
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
-              value: CLIENT
+              value: INTERNAL
           ports:
             - containerPort: 9092
               name: kafkaport

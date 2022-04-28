@@ -9,6 +9,10 @@ quarkus:
       methods: GET,POST,PUT,DELETE,OPTIONS
       headers: '*'
     auth:
+      permission:
+        health:
+          paths: '/q/health/*'
+          policy: permit
         authenticated:
           paths: '/*'
           policy: authenticated
@@ -40,26 +44,17 @@ quarkus:
       eager-init: true
   container-image:
     image: ghcr.io/kuzznya/timepicker/event-service:latest
-    username: ${DOCKER_USERNAME}
-    password: ${DOCKER_PASSWORD}
+    username: ${DOCKER_USERNAME:}
+    password: ${DOCKER_PASSWORD:}
 
 kafka:
   bootstrap:
     servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
-mp:
-  messaging:
-    incoming:
-      vote-channel:
-        topic: votes
-        connector: smallrye-kafka
-        key:
-          deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        value:
-          deserializer: io.vertx.kafka.client.serialization.JsonObjectDeserializer
-
 "%dev":
   quarkus:
+    http:
+      port: 4200
     log:
       console:
         json: false

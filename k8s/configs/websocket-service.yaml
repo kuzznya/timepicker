@@ -6,7 +6,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: PathPrefix('/ws') # && Host(``)
+    - match: PathPrefix('/api/ws') && Host(`timepicker.kuzznya.space`)
       kind: Rule
       services:
         - name: websocket-service
@@ -23,16 +23,10 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
-    - http:
+    - host: timepicker.kuzznya.space
+      http:
         paths:
-          - path: /events
-            pathType: Prefix
-            backend:
-              service:
-                name: websocket-service
-                port:
-                  number: 80
-          - path: /sessions
+          - path: /api/ws/sessions
             pathType: Prefix
             backend:
               service:

@@ -56,6 +56,9 @@
 import { Bar } from 'vue-chartjs/legacy'
 import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import CompactDatePicker from "@/components/CompactDatePicker";
+import votesApi from "@/api/votes";
+import eventsApi from "@/api/events";
+import ws from "@/api/ws";
 
 ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale)
 
@@ -142,19 +145,19 @@ export default {
 
   methods: {
     async loadEventInfo() {
-      const event = await this.$axios.get(`http://localhost:4100/events/${this.id}`).then(response => response.data)
+      const event = await eventsApi.getEventInfo(this.id)
       this.title = event.title
       this.author = event.author
     },
 
     async loadSelectedDates() {
-      const votes = await this.$axios.get(`http://localhost:4200/votes/${this.id}`).then(response => response.data)
+      const votes = await votesApi.getUserVotes(this.id)
       this.days = votes.map(vote => ({id: vote.date, date: Date.parse(vote.date) }))
       this.voted = this.days.length > 0
     },
 
     async loadStatistics() {
-      const data = await this.$axios.get(`http://localhost:4200/votes/${this.id}/stats`).then(response => response.data)
+      const data = await votesApi.getStatistics(this.id)
       this.processStatistics(data.statistics)
     },
 
@@ -174,23 +177,12 @@ export default {
     },
 
     async setupWebSocket() {
-      const sessionId = await this.$axios.post("http://localhost:4000/sessions").then(result => result.data)
-      this.ws = new WebSocket(`ws://localhost:4000/ws/${sessionId}/${this.id}`)
+      this.ws = await ws.setupWebSocket(this.id)
       this.ws.onmessage = event => {
         const stats = JSON.parse(event.data).statistics
         console.log(stats)
 
         this.processStatistics(stats)
-        // const sorted = Object.entries(stats).sort((v1, v2) => v1[0].localeCompare(v2[0]))
-        // this.chartData = {
-        //   labels: sorted.map(v => v[0]),
-        //   datasets: [
-        //     {
-        //       data: sorted.map(v => v[1])
-        //     }
-        //   ]
-        // }
-        // this.bestDate = Object.keys(stats).sort(date => stats[date])[0]
 
         console.log(this.days)
         console.log(this.dates)

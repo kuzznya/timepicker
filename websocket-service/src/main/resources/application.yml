@@ -11,10 +11,13 @@ quarkus:
     auth:
       permission:
         ws:
-          paths: '/ws/*'
+          paths: '/api/ws/*'
+          policy: permit
+        health:
+          paths: '/q/health/*'
           policy: permit
         authenticated:
-          paths: '/*'
+          paths: '/api/ws/sessions'
           policy: authenticated
           auth-mechanism: bearer
   oidc:
@@ -39,8 +42,8 @@ quarkus:
       enabled: false
   container-image:
     image: ghcr.io/kuzznya/timepicker/websocket-service:latest
-    username: ${DOCKER_USERNAME}
-    password: ${DOCKER_PASSWORD}
+    username: ${DOCKER_USERNAME:}
+    password: ${DOCKER_PASSWORD:}
 
 kafka:
   bootstrap:
@@ -65,6 +68,8 @@ mp:
 
 "%dev":
   quarkus:
+    http:
+      port: 4100
     log:
       console:
         json: false
