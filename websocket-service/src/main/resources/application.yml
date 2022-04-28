@@ -37,6 +37,10 @@ quarkus:
   kafka:
     devservices:
       enabled: false
+  container-image:
+    image: ghcr.io/kuzznya/timepicker/websocket-service:latest
+    username: kuzznya
+    password: ${GITHUB_TOKEN}
 
 kafka:
   bootstrap:

@@ -38,6 +38,11 @@ quarkus:
       password: cassandra
     init:
       eager-init: true
+  container-image:
+    image: ghcr.io/kuzznya/timepicker/event-service:latest
+    username: kuzznya
+    password: ${GITHUB_TOKEN}
+
 kafka:
   bootstrap:
     servers: localhost:9092

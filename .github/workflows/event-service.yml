@@ -1,0 +1,17 @@
+name: 'event-service CI/CD'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: login ghcr.io
+      - name: Grant execution permission for gradlew
+        run: chmod +x gradlew
+      - name: Build and push the image
+        run: ./gradlew build -Dquarkus.container-image.push=true
