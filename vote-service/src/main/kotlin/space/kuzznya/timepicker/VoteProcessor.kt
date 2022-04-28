@@ -1,9 +1,9 @@
 package space.kuzznya.timepicker
 
 import io.smallrye.mutiny.coroutines.awaitSuspending
-import io.smallrye.reactive.messaging.annotations.Blocking
 import io.vertx.core.json.JsonObject
 import org.eclipse.microprofile.reactive.messaging.Incoming
+import org.eclipse.microprofile.reactive.messaging.Message
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
@@ -15,12 +15,14 @@ class VoteProcessor(
 
     @Incoming("votes")
     @Outgoing("statistics")
-//    @Blocking("kafka-worker", ordered = true)
-    suspend fun process(voteData: JsonObject): JsonObject {
-        val vote = voteData.mapTo(Vote::class.java)
+    suspend fun process(voteData: Message<JsonObject>): Message<JsonObject> {
+        val vote = voteData.payload.mapTo(Vote::class.java)
+        println(vote)
         if (vote.state == VoteState.VOTED) voteDao.save(vote).awaitSuspending()
         else voteDao.delete(vote).awaitSuspending()
-        return JsonObject.mapFrom(calculateStats(vote.eventId))
+        val stats = calculateStats(vote.eventId)
+        println(stats)
+        return Message.of(JsonObject.mapFrom(stats))
     }
 
     suspend fun calculateStats(event: UUID): Statistics {
