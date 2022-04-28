@@ -13,4 +13,4 @@ jobs:
       - name: Grant execution permission for gradlew
         run: chmod +x gradlew
       - name: Build and push the image
-        run: ./gradlew build -Dquarkus.container-image.push=true
+        run: ./gradlew :vote-service:build -Dquarkus.container-image.push=true
