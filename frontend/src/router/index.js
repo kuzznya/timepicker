@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import Profile from "@/views/Profile";
+import EventInfo from "@/views/EventInfo";
 
 Vue.use(VueRouter)
 
@@ -33,7 +34,7 @@ const routes = [
   {
     path: '/events/:id',
     name: 'EventInfo',
-    component: () => import(/* webpackChunkName: "eventInfo" */ '@/views/EventInfo.vue'),
+    component: EventInfo,
     props: route => ({
       id: route.params.id
     }),

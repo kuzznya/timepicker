@@ -1,9 +1,9 @@
 CREATE KEYSPACE IF NOT EXISTS events WITH replication = {'class':'SimpleStrategy','replication_factor':'1'};
-
+DROP TABLE event;
 CREATE TABLE IF NOT EXISTS events.event(
+    id uuid,
     participant text,
-    event_id uuid,
     title text,
     author text,
-    PRIMARY KEY ( (participant, event_id) )
+    PRIMARY KEY ( (id, participant) )
 );

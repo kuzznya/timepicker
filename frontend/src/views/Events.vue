@@ -4,13 +4,19 @@
     <Event v-for="e in events"
            :key="e.id"
            :id="e.id"
+           :title="e.title"
            @event-deleted="onEventDeleted"
            class="mb-3"
     />
-    <b-button variant="light" @click="addEvent">
+    <b-button variant="light" @click="$bvModal.show('event-modal')">
       <b-icon-plus/>
       Add
     </b-button>
+
+    <b-modal id="event-modal" @ok="addEvent(title)">
+      <label for="title-input">Title:</label>
+      <b-form-input id="title-input" v-model="title"/>
+    </b-modal>
   </b-container>
 </template>
 
@@ -20,26 +26,27 @@ export default {
   name: "Events",
   components: {Event},
   data: () => ({
-    events: [
-      {
-        id: 1
-      },
-      {
-        id: 2
-      }
-    ]
+    events: [],
+    title: ""
   }),
 
+  async mounted() {
+    await this.updateEvents()
+  },
+
   methods: {
-    addEvent() {
-      // FIXME
-      this.events.push(
-        { id: this.events[this.events.length - 1].id + 1 }
-      )
+    async addEvent(title) {
+      await this.$axios.post("http://localhost:4100/events", { title: title })
+        .then(response => response.data)
+      await this.updateEvents()
     },
 
-    onEventDeleted(id) {
-      this.events = this.events.filter(event => event.id !== id)
+    async updateEvents() {
+      this.events = await this.$axios.get("http://localhost:4100/events").then(response => response.data)
+    },
+
+    async onEventDeleted() {
+      await this.updateEvents()
     }
   }
 }

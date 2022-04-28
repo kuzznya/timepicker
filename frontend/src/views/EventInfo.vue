@@ -1,9 +1,9 @@
 <template>
   <b-container>
     <b-card>
-      <h2>Go to the bar</h2>
+      <h2>{{ title }}</h2>
 
-      <p class="font-weight-bold">Author: @kuzznya</p>
+      <p class="font-weight-bold">Author: @{{ author }}</p>
 
       <b-row>
         <b-col>
@@ -72,6 +72,9 @@ export default {
   },
 
   data: () => ({
+    title: "",
+    author: "",
+
     dateRange: {
       start: new Date(),
       end: new Date()
@@ -118,6 +121,10 @@ export default {
     this.chartOptions.onClick = (event, item) => this.onChartClick(event, item)
   },
 
+  async mounted() {
+    await this.loadEventInfo()
+  },
+
   computed: {
     dates() {
       return this.days.map(day => day.date);
@@ -131,6 +138,12 @@ export default {
   },
 
   methods: {
+    async loadEventInfo() {
+      const event = await this.$axios.get(`http://localhost:4100/events/${this.id}`).then(response => response.data)
+      this.title = event.title
+      this.author = event.author
+    },
+
     onDayVoteClick(day) {
       const idx = this.days.findIndex(d => d.id === day.id);
       if (idx >= 0) {

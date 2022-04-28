@@ -9,9 +9,9 @@ import java.util.UUID
 @PropertyStrategy(mutable = false)
 data class Event(
     @PartitionKey(1)
-    val participant: String?,
+    val id: UUID?,
     @PartitionKey(2)
-    val eventId: UUID,
+    val participant: String?,
     val title: String,
     val author: String?
 )
