@@ -32,7 +32,7 @@
         <b-row>
           <b-col>
             <p class="lead">The best day for the event is<br/>
-              <b class="font-weight-bold" @click="showParticipants('10.03.2002')">10.03.2002</b>
+              <b class="font-weight-bold" @click="showParticipants(bestDate)">{{ bestDate }}</b>
             </p>
           </b-col>
         </b-row>
@@ -95,9 +95,7 @@ export default {
       datasets: [ { data: [8, 3, 15, 6] } ]
     },
 
-    bestDates: [
-      '10.03.2002'
-    ],
+    bestDate: null,
 
     selectedResultDate: String,
     participants: [
@@ -125,6 +123,8 @@ export default {
 
   async mounted() {
     await this.loadEventInfo()
+    await this.loadSelectedDates()
+    await this.loadStatistics()
     await this.setupWebSocket()
   },
 
@@ -147,16 +147,54 @@ export default {
       this.author = event.author
     },
 
+    async loadSelectedDates() {
+      const votes = await this.$axios.get(`http://localhost:4200/votes/${this.id}`).then(response => response.data)
+      this.days = votes.map(vote => ({id: vote.date, date: Date.parse(vote.date) }))
+      this.voted = this.days.length > 0
+    },
+
+    async loadStatistics() {
+      const data = await this.$axios.get(`http://localhost:4200/votes/${this.id}/stats`).then(response => response.data)
+      this.processStatistics(data.statistics)
+    },
+
+    processStatistics(stats) {
+      if (stats == null)
+        stats = {}
+      const sorted = Object.entries(stats).sort((v1, v2) => v1[0].localeCompare(v2[0]))
+      this.chartData = {
+        labels: sorted.map(v => v[0]),
+        datasets: [
+          {
+            data: sorted.map(v => v[1])
+          }
+        ]
+      }
+      this.bestDate = Object.keys(stats).sort(date => stats[date])[0]
+    },
+
     async setupWebSocket() {
       const sessionId = await this.$axios.post("http://localhost:4000/sessions").then(result => result.data)
       this.ws = new WebSocket(`ws://localhost:4000/ws/${sessionId}/${this.id}`)
-      this.ws.onmessage = function (event) {
-        const stats = JSON.parse(event).statistics
+      this.ws.onmessage = event => {
+        const stats = JSON.parse(event.data).statistics
         console.log(stats)
-        this.chartData.labels = Object.keys(stats)
-        this.chartData.datasets[0].data = Object.values(stats)
-        const bestDate = Object.keys(stats).sort(date => stats[date])[0]
-        this.bestDates = [bestDate]
+
+        this.processStatistics(stats)
+        // const sorted = Object.entries(stats).sort((v1, v2) => v1[0].localeCompare(v2[0]))
+        // this.chartData = {
+        //   labels: sorted.map(v => v[0]),
+        //   datasets: [
+        //     {
+        //       data: sorted.map(v => v[1])
+        //     }
+        //   ]
+        // }
+        // this.bestDate = Object.keys(stats).sort(date => stats[date])[0]
+
+        console.log(this.days)
+        console.log(this.dates)
+        this.loadSelectedDates()
       }
       this.ws.onclose = function () {
         this.setupWebSocket()

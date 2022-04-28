@@ -1,5 +1,6 @@
 package space.kuzznya.timepicker
 
+import io.quarkus.smallrye.reactivemessaging.ackSuspending
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import io.vertx.core.json.JsonObject
 import org.eclipse.microprofile.reactive.messaging.Incoming
@@ -18,8 +19,9 @@ class VoteProcessor(
     suspend fun process(voteData: Message<JsonObject>): Message<JsonObject> {
         val vote = voteData.payload.mapTo(Vote::class.java)
         println(vote)
-        if (vote.state == VoteState.VOTED) voteDao.save(vote).awaitSuspending()
+        if (voteData.payload.getValue("state") == VoteState.VOTED.name) voteDao.save(vote).awaitSuspending()
         else voteDao.delete(vote).awaitSuspending()
+        voteData.ackSuspending()
         val stats = calculateStats(vote.eventId)
         println(stats)
         return Message.of(JsonObject.mapFrom(stats))

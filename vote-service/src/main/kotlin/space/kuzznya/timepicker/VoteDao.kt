@@ -20,4 +20,7 @@ interface VoteDao {
     @Select(customWhereClause = "event_id = :eventId", allowFiltering = true)
     fun findAllForEvent(eventId: UUID): Multi<Vote>
 
+    @Select(customWhereClause = "username = :username AND event_id = :eventId", allowFiltering = true)
+    fun findAllForUserAndEvent(username: String, eventId: UUID): Multi<Vote>
+
 }

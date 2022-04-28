@@ -15,7 +15,4 @@ data class Vote(
     val username: String,
     @PartitionKey(3)
     val date: LocalDate,
-) {
-    @com.datastax.oss.driver.api.mapper.annotations.Transient
-    var state: VoteState = VoteState.VOTED
-}
+)
