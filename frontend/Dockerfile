@@ -11,4 +11,4 @@ COPY server.js .
 COPY --from=build /dist /dist
 ENV PORT 8080
 # using @ as delimiter instead of / because URL contains / too
-ENTRYPOINT sed -i "s@API_PATH@$API_PATH@" /dist/js/app*.js && sed -i "s@AUTH_PATH@$AUTH_PATH@" && node server.js
+ENTRYPOINT sed -i "s@API_PATH@$API_PATH@" /dist/js/app*.js && sed -i "s@AUTH_PATH@$AUTH_PATH@" /dist/js/app*.js && node server.js
