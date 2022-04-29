@@ -14,6 +14,8 @@
 
 <script>
 import CompactDatePicker from "@/components/CompactDatePicker";
+import events from "@/api/events"
+
 export default {
   name: "Event",
   components: {CompactDatePicker},
@@ -23,13 +25,19 @@ export default {
     title: String
   },
 
+  data: () => ({
+    dateRange: {
+      start: new Date(),
+      end: new Date()
+    }
+  }),
+
   methods: {
     async deleteEvent() {
-      // FIXME implement
       const confirmed = await this.$bvModal.msgBoxConfirm("Are sure want to delete the event?")
       if (!confirmed)
         return
-      await this.$axios.delete(`/api/events/${this.id}`).then(response => response.data)
+      await events.deleteEvent()
       this.$emit('event-deleted')
     }
   }

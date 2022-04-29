@@ -6,5 +6,7 @@ export default {
 
   getEvents: async () => await axios.get("/api/events").then(response => response.data),
 
-  getEventInfo: async (id) => await axios.get(`/api/events/${id}`).then(response => response.data)
+  getEventInfo: async (id) => await axios.get(`/api/events/${id}`).then(response => response.data),
+
+  deleteEvent: async (id) => await axios.delete(`/api/events/${id}`).then(response => response.data)
 }
