@@ -23,6 +23,7 @@ jobs:
       - name: Publish container
         run: docker push ghcr.io/kuzznya/timepicker/frontend --all-tags
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Prepare .kube directory

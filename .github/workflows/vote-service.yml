@@ -21,6 +21,7 @@ jobs:
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Prepare .kube directory
