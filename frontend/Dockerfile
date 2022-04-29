@@ -1,7 +1,6 @@
 FROM node:16-alpine as build
 COPY package.json yarn.lock babel.config.js ./
 RUN yarn install --frozen-lockfile
-COPY .env .env
 COPY public public
 COPY src src
 RUN yarn build
