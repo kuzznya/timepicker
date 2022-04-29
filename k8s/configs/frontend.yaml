@@ -58,7 +58,9 @@ spec:
           env:
             - name: PORT
               value: "8080"
-            - name: API_GATEWAY_PATH
+            - name: API_PATH
               value: "http://timepicker.kuzznya.space"
+            - name: AUTH_PATH
+              value: "http://auth.kuzznya.space"
           ports:
             - containerPort: 8080

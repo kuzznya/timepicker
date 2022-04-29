@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 Vue.prototype.$store = store
 Vue.prototype.$axios = axios
 
-const apiHost = process.env.VUE_APP_AUTH_PATH || process.env.VUE_APP_API_PATH || "API_PATH"
+const apiHost = process.env.VUE_APP_AUTH_PATH || process.env.VUE_APP_API_PATH || "AUTH_PATH"
 
 Vue.use(VueKeycloak, {
   config: {
