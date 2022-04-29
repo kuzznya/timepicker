@@ -1,6 +1,6 @@
 import axios from "@/axios"
 
-const apiHost = process.env.VUE_APP_API_PATH
+const apiHost = process.env.VUE_APP_API_PATH || "ENV_API_PATH"
 
 export default {
 
