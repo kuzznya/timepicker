@@ -4,7 +4,7 @@ metadata:
   name: letsencrypt-staging
 spec:
   acme:
-    email: ilya.kuznetsov@alpeconsulting.com
+    email: ikuz2002@gmail.com
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: staging-issuer-account-key
@@ -21,7 +21,7 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
-    email: ilya.kuznetsov@alpeconsulting.com
+    email: ikuz2002@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: prod-issuer-account-key

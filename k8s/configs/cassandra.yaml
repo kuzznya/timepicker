@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:
     - port: 9042
-      name: clientport
+      name: cql
     - port: 7000
       name: clusterport
   selector:
@@ -30,7 +30,7 @@ spec:
       labels:
         app: cassandra
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       containers:
         - name: cassandra
           image: bitnami/cassandra:3.11.4
@@ -42,11 +42,23 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: CASSANDRA_PASSWORD
+            - name: CASSANDRA_PASSWORD_SEEDER
+              value: 'yes'
+            - name: CASSANDRA_HOST
+              value: "cassandra-0.cassandra.master.svc.cluster.local"
           ports:
             - containerPort: 9042
-              name: clientport
+              name: cql
             - containerPort: 7000
-              name: clusterport
+              name: intra-node
+            - containerPort: 7001
+              name: tls-intra-node
+            - containerPort: 7199
+              name: jmx
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
           volumeMounts:
             - name: cassandra-data
               mountPath: /bitnami

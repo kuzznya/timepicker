@@ -73,4 +73,19 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: kafka:9092
             - name: KEYCLOAK_URL
-              value: http://keycloak:8080/auth/realms/timepicker
+              value: http://auth.kuzznya.space/auth/realms/timepicker
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /q/health/live
+            initialDelaySeconds: 30
+            terminationGracePeriodSeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /q/health/ready
+            initialDelaySeconds: 30
+            timeoutSeconds: 2
+            periodSeconds: 10

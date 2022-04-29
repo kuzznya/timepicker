@@ -34,12 +34,12 @@ quarkus:
     devservices:
       enabled: false
   cassandra:
-    contact-points: localhost:9042
+    contact-points: ${CASSANDRA_URL:localhost:9042}
     local-datacenter: datacenter1
     keyspace: votes
     auth:
-      username: cassandra
-      password: cassandra
+      username: ${CASSANDRA_USERNAME:cassandra}
+      password: ${CASSANDRA_PASSWORD:cassandra}
     init:
       eager-init: true
   container-image:
@@ -50,7 +50,7 @@ quarkus:
 
 kafka:
   bootstrap:
-    servers: localhost:9092
+    servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 mp:
   messaging:

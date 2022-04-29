@@ -20,3 +20,12 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare .kube directory
+        run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
+      - name: Prepare kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Deploy to Kubernetes
+        run: kubectl rollout restart deployment websocket-service --namespace master

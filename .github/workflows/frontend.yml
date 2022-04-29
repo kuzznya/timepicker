@@ -22,3 +22,12 @@ jobs:
           --password-stdin ghcr.io
       - name: Publish container
         run: docker push ghcr.io/kuzznya/timepicker/frontend --all-tags
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare .kube directory
+        run: mkdir ~/.kube || echo "Cannot create ~/.kube directory, skipping"
+      - name: Prepare kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Deploy to Kubernetes
+        run: kubectl rollout restart deployment frontend --namespace master

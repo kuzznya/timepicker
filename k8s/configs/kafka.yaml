@@ -9,7 +9,7 @@ spec:
     - port: 9092
       name: kafkaport
   selector:
-    app: redis
+    app: kafka
 
 ---
 
