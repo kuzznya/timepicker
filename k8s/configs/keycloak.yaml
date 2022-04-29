@@ -1,3 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+  annotations:
+    ingressClassName: "traefik"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    - host: timepicker.kuzznya.space
+      http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /js
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+
+---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -41,6 +84,8 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: KEYCLOAK_PASSWORD
+            - name: KEYCLOAK_IMPORT
+              value: "/etc/timepicker-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled"
             - name: DB_VENDOR
               value: postgres
             - name: DB_ADDR
@@ -59,6 +104,14 @@ spec:
           ports:
             - containerPort: 8080
               name: http8080
+          volumeMounts:
+            - name: realm-volume
+              mountPath: /etc/timepicker-realm.json
+              subPath: realm.json
+      volumes:
+        - name: realm-volume
+          configMap:
+            name: timepicker-realm
 
 ---
 

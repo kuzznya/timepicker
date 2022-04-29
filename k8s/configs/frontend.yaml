@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/kuzznya/timepicker/frontend:master
+          image: ghcr.io/kuzznya/timepicker/frontend:latest
           imagePullPolicy: Always
           env:
             - name: PORT
