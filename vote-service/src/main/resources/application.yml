@@ -67,6 +67,13 @@ mp:
         value:
           deserializer: io.vertx.kafka.client.serialization.JsonObjectDeserializer
     outgoing:
+      user-votes:
+        connector: smallrye-kafka
+        topic: user-votes
+        key:
+          serializer: org.apache.kafka.common.serialization.StringSerializer
+        value:
+          serializer: io.vertx.kafka.client.serialization.JsonObjectSerializer
       statistics:
         connector: smallrye-kafka
         topic: statistics

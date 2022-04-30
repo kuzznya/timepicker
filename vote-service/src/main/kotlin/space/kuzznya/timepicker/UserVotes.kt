@@ -3,7 +3,8 @@ package space.kuzznya.timepicker
 import java.time.LocalDate
 import java.util.UUID
 
-data class Statistics(
+data class UserVotes(
     val eventId: UUID,
-    val statistics: Map<LocalDate, Int>
+    val username: String,
+    val votes: List<LocalDate>
 )

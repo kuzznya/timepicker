@@ -1,4 +1,4 @@
-package space.kuzznya.timepicker
+package space.kuzznya.timepicker.model
 
 import java.time.LocalDate
 import java.util.UUID

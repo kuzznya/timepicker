@@ -8,24 +8,25 @@ import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import space.kuzznya.timepicker.ws.DateVoteDecoder
+import space.kuzznya.timepicker.model.DateVote
+import space.kuzznya.timepicker.model.DateVoteMessage
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
-@ServerEndpoint("/api/ws/{id}/{event}", decoders = [DateVoteDecoder::class])
+@ServerEndpoint("/api/ws/{id}/{event}")
 @ApplicationScoped
 class MainWebSocket(
     @Channel("votes")
-    private val emitter: Emitter<DateVoteEvent>,
+    private val emitter: Emitter<DateVote>,
     private val sessionStore: SessionStore,
     private val vertx: Vertx
 ) {
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(MainWebSocket::class.java)
+        private val log: Logger = LoggerFactory.getLogger(MainWebSocket::class.java)
     }
 
     val sessions: MutableMap<UUID, SessionInfo> = mutableMapOf()
@@ -70,6 +71,6 @@ class MainWebSocket(
         val message = mapper.readValue(data, DateVoteMessage::class.java)
         log.info("Received vote message $message")
         val username = sessions[id]?.username ?: throw RuntimeException("Session not found")
-        emitter.send(DateVoteEvent(username, message.event, message.date, message.state))
+        emitter.send(DateVote(username, message.event, message.date, message.state))
     }
 }

@@ -4,26 +4,25 @@ import io.vertx.core.json.JsonObject
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import space.kuzznya.timepicker.model.Statistics
+import space.kuzznya.timepicker.model.UserVotes
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class StatisticsProcessor(
+class UserVotesProcessor(
     private val ws: MainWebSocket
 ) {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(StatisticsProcessor::class.java)
+        private val log: Logger = LoggerFactory.getLogger(UserVotesProcessor::class.java)
     }
 
-    @Incoming("statistics")
+    @Incoming("user-votes")
     fun process(data: JsonObject) {
-        val stats = data.mapTo(Statistics::class.java)
-        println(stats)
+        val userVotes = data.mapTo(UserVotes::class.java)
         ws.sessions.values
-            .filter { it.eventId == stats.eventId }
+            .filter { it.eventId == userVotes.eventId && it.username == userVotes.username }
             .filter { it.session.isOpen }
-            .onEach { log.info("Sending real-time stats of event ${it.eventId} to ${it.username} " +
+            .onEach { log.info("Sending user's votes of event ${it.eventId} to ${it.username} " +
                 "(session ${it.session.pathParameters["id"]}") }
             .forEach { it.session.asyncRemote.sendText(data.encode()) }
     }

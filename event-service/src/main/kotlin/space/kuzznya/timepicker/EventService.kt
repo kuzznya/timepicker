@@ -9,14 +9,13 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class EventService {
+class EventService(
+    private val eventDao: EventDao
+) {
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(EventService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(EventService::class.java)
     }
-
-    @Inject
-    internal lateinit var eventDao: EventDao
 
     fun save(event: Event, author: String) = eventDao.save(
         event.copy(
