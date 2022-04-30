@@ -6,13 +6,15 @@
           :value="inputValue.start"
           v-on="inputEvents.start"
           :readonly="true"
-          class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
+          size="10"
+          class="border px-2 py-1 rounded focus:outline-none focus:border-indigo-300"
         />
         <b-icon-arrow-right class="mx-2"/>
         <input
           :value="inputValue.end"
           v-on="inputEvents.end"
-          class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
+          size="10"
+          class="border px-2 py-1 rounded focus:outline-none focus:border-indigo-300"
         />
       </div>
     </template>

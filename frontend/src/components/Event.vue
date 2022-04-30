@@ -1,13 +1,19 @@
 <template>
   <b-card>
-    <b-row>
-      <b-col @click="$router.push(`/events/${id}`)">
-        <h4>{{ title }}</h4>
-      </b-col>
-      <compact-date-picker v-model="dateRange"/>
-      <b-col cols="1" align-self="center">
-        <b-icon-trash font-scale="1.2" @click="deleteEvent"/>
-      </b-col>
+    <b-row class="justify-content-center">
+      <h4 @click="$router.push(`/events/${id}`)" class="mx-3 w-50 btn-link">
+        {{ title }}
+      </h4>
+
+      <b-form-row class="mx-5 align-self-center">
+        <compact-date-picker v-model="dateRange"/>
+      </b-form-row>
+
+      <b-icon-trash @click="deleteEvent"
+                    font-scale="1.2"
+                    class="position-absolute align-self-center"
+                    style="right: 10px;"
+      />
     </b-row>
   </b-card>
 </template>

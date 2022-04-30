@@ -76,6 +76,7 @@ export default {
 
   data: () => ({
     ws: null,
+    messages: [],
 
     title: "",
     author: "",
@@ -84,8 +85,6 @@ export default {
       start: new Date(),
       end: new Date()
     },
-
-    voted: false,
 
     days: [],
 
@@ -135,12 +134,17 @@ export default {
     dates() {
       return this.days.map(day => day.date);
     },
+
     attributes() {
       return this.dates.map(date => ({
         highlight: true,
         dates: date,
       }));
     },
+
+    voted() {
+      return this.days.length > 0
+    }
   },
 
   methods: {
@@ -153,7 +157,6 @@ export default {
     async loadSelectedDates() {
       const votes = await votesApi.getUserVotes(this.id)
       this.days = votes.map(vote => ({id: vote.date, date: Date.parse(vote.date) }))
-      this.voted = this.days.length > 0
     },
 
     async loadStatistics() {
@@ -162,8 +165,11 @@ export default {
     },
 
     processStatistics(stats) {
-      if (stats == null)
+      if (stats == null) {
         stats = {}
+        this.bestDate = null
+        return
+      }
       const sorted = Object.entries(stats).sort((v1, v2) => v1[0].localeCompare(v2[0]))
       this.chartData = {
         labels: sorted.map(v => v[0]),
@@ -176,42 +182,64 @@ export default {
       this.bestDate = Object.keys(stats).sort(date => stats[date])[0]
     },
 
+    processSelectedDates(dates) {
+      if (dates == null) {
+        this.days = []
+        return
+      }
+      this.days = dates.map(date => ({id: date, date: Date.parse(date) }))
+    },
+
     async setupWebSocket() {
       this.ws = await ws.setupWebSocket(this.id)
-      this.ws.onmessage = event => {
-        const stats = JSON.parse(event.data).statistics
-        console.log(stats)
 
-        this.processStatistics(stats)
-
-        console.log(this.days)
-        console.log(this.dates)
-        this.loadSelectedDates()
+      this.ws.onopen = () => {
+        while (this.messages.length > 0) this.ws.send(this.messages.pop())
       }
-      this.ws.onclose = function () {
+
+      this.ws.onmessage = event => {
+        const data = JSON.parse(event.data)
+        switch (data.type) {
+          case "VOTES": {
+            const votes = data.votes
+            this.processSelectedDates(votes)
+            break;
+          }
+          case "STATISTICS": {
+            const stats = data.statistics
+            this.processStatistics(stats)
+            break;
+          }
+        }
+      }
+
+      this.ws.onclose = () => {
         this.setupWebSocket()
       }
     },
 
     async send(date, state) {
-      if (this.ws == null || this.ws.readyState === WebSocket.CLOSED) await this.setupWebSocket()
-      this.ws.send(JSON.stringify({event: this.id, date: date, state: state}))
+      const message = JSON.stringify({event: this.id, date: date, state: state})
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(message)
+      } else {
+        this.messages.push(message)
+        await this.setupWebSocket()
+      }
     },
 
     onDayVoteClick(day) {
-      const idx = this.days.findIndex(d => d.id === day.id);
-      console.log(day.id)
+      const idx = this.days.findIndex(d => d.id === day.id)
       if (idx >= 0) {
-        this.days.splice(idx, 1);
+        // this.days.splice(idx, 1)
         this.send(day.id, 'UNVOTED')
       } else {
-        this.days.push({
-          id: day.id,
-          date: day.date,
-        });
+        // this.days.push({
+        //   id: day.id,
+        //   date: day.date,
+        // })
         this.send(day.id, 'VOTED')
       }
-      this.voted = this.days.length > 0
     },
 
     showParticipants(date) {

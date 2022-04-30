@@ -17,8 +17,8 @@ export default {
 
   data: () => ({
     profile: {
-      email: String,
-      username: String
+      email: "",
+      username: ""
     }
   }),
 
