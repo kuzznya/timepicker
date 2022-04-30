@@ -6,6 +6,8 @@ import io.vertx.core.Vertx
 import kotlinx.coroutines.*
 import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import space.kuzznya.timepicker.ws.DateVoteDecoder
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -22,6 +24,10 @@ class MainWebSocket(
     private val vertx: Vertx
 ) {
 
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(MainWebSocket::class.java)
+    }
+
     val sessions: MutableMap<UUID, SessionInfo> = mutableMapOf()
 
     private val mapper = ObjectMapper().findAndRegisterModules()
@@ -33,14 +39,15 @@ class MainWebSocket(
         CoroutineScope(VertxDispatcher(vertx.orCreateContext)).launch {
             val username = sessionStore.useSession(id)
             if (username == null) {
-                println("Unknown session id")
+                log.warn("Unknown session id $id")
                 withContext(Dispatchers.IO) {
-                    session.close(CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "Unknown session id"))
+                    session.close(CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "Unknown session id $id"))
+                    log.info("Session closed")
                 }
                 return@launch
             }
             sessions[id] = SessionInfo(username, eventId, session)
-            println("Client $username connected")
+            log.info("Client $username connected")
         }
     }
 
@@ -48,11 +55,12 @@ class MainWebSocket(
     fun onClose(session: Session, @PathParam("id") idParam: String) {
         val id = UUID.fromString(idParam)
         sessions.remove(id)
+        log.info("Session $id is closed")
     }
 
     @OnError
     fun onError(session: Session, throwable: Throwable) {
-        println("Fuck")
+        log.error("WebSocket error occurred", throwable)
         throwable.printStackTrace()
     }
 
@@ -60,7 +68,7 @@ class MainWebSocket(
     fun onMessage(session: Session, @PathParam("id") idParam: String, data: String) {
         val id = UUID.fromString(idParam)
         val message = mapper.readValue(data, DateVoteMessage::class.java)
-        println(message)
+        log.info("Received vote message $message")
         val username = sessions[id]?.username ?: throw RuntimeException("Session not found")
         emitter.send(DateVoteEvent(username, message.event, message.date, message.state))
     }

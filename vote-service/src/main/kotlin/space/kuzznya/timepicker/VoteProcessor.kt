@@ -6,6 +6,8 @@ import io.vertx.core.json.JsonObject
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.eclipse.microprofile.reactive.messaging.Message
 import org.eclipse.microprofile.reactive.messaging.Outgoing
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
 
@@ -14,16 +16,20 @@ class VoteProcessor(
     private val voteDao: VoteDao
 ) {
 
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(VoteProcessor::class.java)
+    }
+
     @Incoming("votes")
     @Outgoing("statistics")
     suspend fun process(voteData: Message<JsonObject>): Message<JsonObject> {
         val vote = voteData.payload.mapTo(Vote::class.java)
-        println(vote)
+        log.info("Vote received: $vote")
         if (voteData.payload.getValue("state") == VoteState.VOTED.name) voteDao.save(vote).awaitSuspending()
         else voteDao.delete(vote).awaitSuspending()
         voteData.ackSuspending()
         val stats = calculateStats(vote.eventId)
-        println(stats)
+        log.info("Statistics calculated: $stats")
         return Message.of(JsonObject.mapFrom(stats))
     }
 
