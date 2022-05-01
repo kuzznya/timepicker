@@ -22,7 +22,10 @@ interface EventDao {
     fun delete(id: UUID, participant: String): Uni<Void>
 
     @Select
-    fun findById(id: UUID, participant: String): Uni<Event>
+    fun findByIdForParticipant(id: UUID, participant: String): Uni<Event>
+
+    @Select(customWhereClause = "id = :id", allowFiltering = true)
+    fun findById(id: UUID): Multi<Event>
 
     @Select(customWhereClause = "participant = :participant", allowFiltering = true)
     fun findByParticipant(participant: String): Multi<Event>

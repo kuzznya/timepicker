@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS events.event(
     participant text,
     title text,
     author text,
+    min_date date,
+    max_date date,
     PRIMARY KEY ( (id, participant) )
 );
 

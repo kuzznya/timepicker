@@ -8,12 +8,17 @@
       <b-row>
         <b-col>
           <span>
-            <compact-date-picker v-model="dateRange"/>
+            <compact-date-picker v-model="dateRange" :update-callback="updateDates" :confirm-before-update="true"/>
           </span>
         </b-col>
       </b-row>
 
-      <v-calendar :attributes="attributes" @dayclick="onDayVoteClick" class="mt-3"/>
+      <v-calendar @dayclick="onDayVoteClick"
+                  :attributes="attributes"
+                  :min-date="dateRange.start"
+                  :max-date="dateRange.end"
+                  class="mt-3"
+      />
 
       <div v-if="!voted" class="mt-1">
         <h4 class="text-info">Please vote!</h4>
@@ -56,9 +61,9 @@
 import { Bar } from 'vue-chartjs/legacy'
 import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import CompactDatePicker from "@/components/CompactDatePicker";
-import votesApi from "@/api/votes";
-import eventsApi from "@/api/events";
 import ws from "@/api/ws";
+import events from "@/api/events";
+import votes from "@/api/votes";
 
 ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale)
 
@@ -149,18 +154,20 @@ export default {
 
   methods: {
     async loadEventInfo() {
-      const event = await eventsApi.getEventInfo(this.id)
+      const event = await events.getEventInfo(this.id)
       this.title = event.title
       this.author = event.author
+      this.dateRange.start = event.minDate
+      this.dateRange.end = event.maxDate
     },
 
     async loadSelectedDates() {
-      const votes = await votesApi.getUserVotes(this.id)
-      this.days = votes.map(vote => ({id: vote.date, date: Date.parse(vote.date) }))
+      const userVotes = await votes.getUserVotes(this.id)
+      this.days = userVotes.map(vote => ({ id: vote.date, date: Date.parse(vote.date) }))
     },
 
     async loadStatistics() {
-      const data = await votesApi.getStatistics(this.id)
+      const data = await votes.getStatistics(this.id)
       this.processStatistics(data.statistics)
     },
 
@@ -231,15 +238,14 @@ export default {
     onDayVoteClick(day) {
       const idx = this.days.findIndex(d => d.id === day.id)
       if (idx >= 0) {
-        // this.days.splice(idx, 1)
         this.send(day.id, 'UNVOTED')
       } else {
-        // this.days.push({
-        //   id: day.id,
-        //   date: day.date,
-        // })
         this.send(day.id, 'VOTED')
       }
+    },
+
+    async updateDates(range) {
+      await events.changeDates(this.id, range.start, range.end)
     },
 
     showParticipants(date) {

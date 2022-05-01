@@ -5,8 +5,10 @@ metadata:
   labels:
     app: cassandra
 spec:
+  type: NodePort
   ports:
     - port: 9042
+      nodePort: 30042
       name: cql
     - port: 7000
       name: clusterport

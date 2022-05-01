@@ -6,7 +6,7 @@
       </h4>
 
       <b-form-row class="mx-5 align-self-center">
-        <compact-date-picker v-model="dateRange"/>
+        <compact-date-picker v-model="dateRange" :update-callback="updateDates" :confirm-before-update="true"/>
       </b-form-row>
 
       <b-icon-trash @click="deleteEvent"
@@ -33,9 +33,10 @@ export default {
 
   data: () => ({
     dateRange: {
-      start: new Date(),
-      end: new Date()
-    }
+      start: new Date('2022-05-01'),
+      end: new Date('2022-05-03')
+    },
+    rangeUpdateFailed: false
   }),
 
   methods: {
@@ -43,8 +44,12 @@ export default {
       const confirmed = await this.$bvModal.msgBoxConfirm("Are sure want to delete the event?")
       if (!confirmed)
         return
-      await events.deleteEvent()
+      await events.deleteEvent(this.id)
       this.$emit('event-deleted')
+    },
+
+    async updateDates(range) {
+      await events.changeDates(this.id, range.start, range.end)
     }
   }
 }

@@ -7,6 +7,7 @@ import java.util.UUID
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 
@@ -19,6 +20,11 @@ class EventResource(
 
     @POST
     fun add(event: Event) = eventService.save(event, accessToken.name)
+
+    @PUT
+    @Path("/{id}/dates")
+    suspend fun updateDates(@PathParam("id") id: UUID, request: DateUpdateRequest) =
+        eventService.updateDates(id, accessToken.name, request)
 
     @DELETE
     @Path("/{id}")

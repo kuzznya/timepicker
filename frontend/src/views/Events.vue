@@ -13,23 +13,32 @@
       Add
     </b-button>
 
-    <b-modal id="event-modal" @ok="addEvent(title)">
+    <b-modal id="event-modal" @ok="addEvent" title="New event">
       <label for="title-input">Title:</label>
-      <b-form-input id="title-input" v-model="title"/>
+      <b-form-input id="title-input" v-model="newEvent.title" class="mb-3"/>
+      <label for="min-date-input">Dates:</label>
+      <compact-date-picker v-model="newEvent.dateRange"/>
     </b-modal>
   </b-container>
 </template>
 
 <script>
 import Event from "@/components/Event";
-import eventsApi from "@/api/events"
+import CompactDatePicker from "@/components/CompactDatePicker";
+import events from "@/api/events"
 
 export default {
   name: "Events",
-  components: {Event},
+  components: {CompactDatePicker, Event},
   data: () => ({
     events: [],
-    title: ""
+    newEvent: {
+      title: "",
+      dateRange: {
+        start: new Date(),
+        end: new Date()
+      }
+    }
   }),
 
   async mounted() {
@@ -37,13 +46,19 @@ export default {
   },
 
   methods: {
-    async addEvent(title) {
-      await eventsApi.addEvent({title: title})
+    async addEvent() {
+      const event = {
+        title: this.newEvent.title,
+        minDate: this.newEvent.dateRange.start,
+        maxDate: this.newEvent.dateRange.end
+      }
+      await events.addEvent(event)
       await this.updateEvents()
+      this.newEvent.title = ""
     },
 
     async updateEvents() {
-      this.events = await eventsApi.getEvents()
+      this.events = await events.getEvents()
     },
 
     async onEventDeleted() {

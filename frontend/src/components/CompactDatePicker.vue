@@ -1,22 +1,25 @@
 <template>
   <v-date-picker v-model="range" is-range>
     <template v-slot="{ inputValue, inputEvents }">
-      <div class="flex justify-center items-center">
+      <b-button-group class="flex justify-center items-center">
         <input
           :value="inputValue.start"
           v-on="inputEvents.start"
-          :readonly="true"
           size="10"
-          class="border px-2 py-1 rounded focus:outline-none focus:border-indigo-300"
+          class="border px-2 py-1 rounded-left focus:outline-none focus:border-indigo-300"
         />
-        <b-icon-arrow-right class="mx-2"/>
+
+        <b-button :disabled="true" variant="light">
+          <b-icon-arrow-right/>
+        </b-button>
+
         <input
           :value="inputValue.end"
           v-on="inputEvents.end"
           size="10"
-          class="border px-2 py-1 rounded focus:outline-none focus:border-indigo-300"
+          class="border px-2 py-1 rounded-right focus:outline-none focus:border-indigo-300"
         />
-      </div>
+      </b-button-group>
     </template>
   </v-date-picker>
 </template>
@@ -25,7 +28,32 @@
 export default {
   name: "CompactDatePicker",
 
-  prop: ['value'],
+  model: {
+    prop: 'value',
+    event: 'input'
+  },
+
+  props: {
+    value: {
+      start: Date,
+      end: Date
+    },
+    confirmBeforeUpdate: {
+      type: Boolean,
+      default: false
+    },
+    updateCallback: {
+      type: Function,
+      default: () => {}
+    }
+  },
+
+  computed: {
+    changed() {
+      return this.range.start.getTime() !== this.value.start.getTime() ||
+        this.range.end.getTime() !== this.value.end.getTime()
+    }
+  },
 
   data: () => ({
     range: {
@@ -34,9 +62,48 @@ export default {
     }
   }),
 
+  created() {
+    this.range = this.value
+  },
+
+  methods: {
+    async updateWithConfirmation(value) {
+      const answer = await this.$bvModal.msgBoxConfirm(
+        "Are you sure want to change the dates? Votes for some dates can be lost"
+      )
+      if (answer) {
+        try {
+          await this.updateCallback(value)
+          this.$emit('input', value)
+        } catch {
+          this.$bvToast.toast('Cannot update dates, please try again later',
+            { variant: 'danger', toaster: 'b-toaster-bottom-right' })
+          this.range = this.value
+        }
+      }
+      else {
+        this.range = this.value
+      }
+    },
+
+    async updateWithoutConfirmation(value) {
+      try {
+        await this.updateCallback(value)
+        this.$emit('input', value)
+      } catch {
+        this.$bvToast.toast('Cannot update dates, please try again later',
+          { variant: 'danger', toaster: 'b-toaster-bottom-right' })
+        this.range = this.value
+      }
+    }
+  },
+
   watch: {
-    range: function (value) {
-      this.$emit('input', value)
+    async range(value) {
+      if (!this.changed)
+        return
+      if (this.confirmBeforeUpdate) await this.updateWithConfirmation(value)
+      else await this.updateWithoutConfirmation(value)
     }
   }
 }

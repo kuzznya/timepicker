@@ -8,5 +8,9 @@ export default {
 
   getEventInfo: async (id) => await axios.get(`/api/events/${id}`).then(response => response.data),
 
+  changeDates: async (id, minDate, maxDate) =>
+    await axios.put(`/api/events/${id}/dates`, { minDate: minDate, maxDate: maxDate })
+      .then(response => response.data),
+
   deleteEvent: async (id) => await axios.delete(`/api/events/${id}`).then(response => response.data)
 }
