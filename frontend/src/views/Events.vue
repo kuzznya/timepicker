@@ -58,7 +58,12 @@ export default {
     },
 
     async updateEvents() {
-      this.events = await events.getEvents()
+      try {
+        this.events = await events.getEvents()
+      } catch {
+        this.$bvToast.toast('Cannot load events, please try again later',
+          { variant: 'danger', toaster: 'b-toaster-bottom-right' })
+      }
     },
 
     async onEventDeleted() {

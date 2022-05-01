@@ -31,8 +31,8 @@ class EventService(
 
     suspend fun updateDates(id: UUID, user: String, request: DateUpdateRequest): Event {
         val participantEvent: Event = eventDao.findByIdForParticipant(id, user)
-            .onItem().ifNull().continueWith(null as Event?)
-            .awaitSuspending() ?: throw NotFoundException("Event $id not found")
+            .onItem().ifNull().failWith { NotFoundException("Event $id not found") }
+            .awaitSuspending()
         eventDao.findById(id)
             .filter { event -> event.author == user }
             .map { it.copy(minDate = request.minDate, maxDate = request.maxDate) }
