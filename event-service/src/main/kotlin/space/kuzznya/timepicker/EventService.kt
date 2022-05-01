@@ -46,7 +46,12 @@ class EventService(
 
     fun findOne(id: UUID, participant: String): Uni<Event> = eventDao.findByIdForParticipant(id, participant)
         .invoke { event -> log.info("Retrieved event $event") }
-        .onItem().ifNull().switchTo(Uni.createFrom().failure(NotFoundException("Event $id not found")))
+        .onItem().ifNull().switchTo {
+            eventDao.findById(id).toUni()
+                .onItem().ifNull().failWith { NotFoundException("Event $id not found") }
+                .map { it.copy(participant = participant) }
+                .call { event -> eventDao.save(event) }
+        }
 
     fun findAllForParticipant(participant: String): Multi<Event> = eventDao.findByParticipant(participant)
         .invoke { event -> log.info("Retrieved event $event (searching all for participant)") }
