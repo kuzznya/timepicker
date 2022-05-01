@@ -28,14 +28,16 @@ export default {
 
   props: {
     id: null,
-    title: String
+    title: String,
+    dateRange: {
+      start: Date,
+      end: Date
+    }
   },
 
+  emits: ['update:dateRange'],
+
   data: () => ({
-    dateRange: {
-      start: new Date('2022-05-01'),
-      end: new Date('2022-05-03')
-    },
     rangeUpdateFailed: false
   }),
 
@@ -50,6 +52,7 @@ export default {
 
     async updateDates(range) {
       await events.changeDates(this.id, range.start, range.end)
+      this.$emit('update:dateRange', range)
     }
   }
 }

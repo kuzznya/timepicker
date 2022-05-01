@@ -50,6 +50,8 @@ export default {
 
   computed: {
     changed() {
+      if (this.value.start == null || this.value.end == null)
+        return false
       return this.range.start.getTime() !== this.value.start.getTime() ||
         this.range.end.getTime() !== this.value.end.getTime()
     }
@@ -57,12 +59,12 @@ export default {
 
   data: () => ({
     range: {
-      start: new Date(),
-      end: new Date()
+      start: null,
+      end: null
     }
   }),
 
-  created() {
+  mounted() {
     this.range = this.value
   },
 
@@ -104,6 +106,10 @@ export default {
         return
       if (this.confirmBeforeUpdate) await this.updateWithConfirmation(value)
       else await this.updateWithoutConfirmation(value)
+    },
+
+    value() {
+      if (this.range !== this.value) this.range = this.value
     }
   }
 }

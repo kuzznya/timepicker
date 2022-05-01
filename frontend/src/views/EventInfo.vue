@@ -87,8 +87,8 @@ export default {
     author: "",
 
     dateRange: {
-      start: new Date(),
-      end: new Date()
+      start: null,
+      end: null
     },
 
     days: [],
@@ -157,8 +157,11 @@ export default {
       const event = await events.getEventInfo(this.id)
       this.title = event.title
       this.author = event.author
-      this.dateRange.start = event.minDate
-      this.dateRange.end = event.maxDate
+      console.log(event)
+      this.dateRange = {
+        start: new Date(event.minDate),
+        end: new Date(event.maxDate)
+      }
     },
 
     async loadSelectedDates() {

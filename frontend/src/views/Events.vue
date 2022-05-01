@@ -5,6 +5,7 @@
            :key="e.id"
            :id="e.id"
            :title="e.title"
+           :date-range="{start: new Date(e.minDate), end: new Date(e.maxDate)}"
            @event-deleted="onEventDeleted"
            class="mb-3"
     />
