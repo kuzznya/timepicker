@@ -34,7 +34,6 @@ class EventService(
             .onItem().ifNull().failWith { NotFoundException("Event $id not found") }
             .awaitSuspending()
         eventDao.findById(id)
-            .filter { event -> event.author == user }
             .map { it.copy(minDate = request.minDate, maxDate = request.maxDate) }
             .call { event -> eventDao.save(event) }
             .collect().asList().awaitSuspending()
