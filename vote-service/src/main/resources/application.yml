@@ -22,7 +22,7 @@ quarkus:
     application-type: service
     client-id: timepicker-backend
     credentials:
-      secret: bf6cfb18-c502-4ad0-af8a-fbf7802b4d82
+      secret: ${KEYCLOAK_SECRET}
     tls:
       verification: none
   keycloak:

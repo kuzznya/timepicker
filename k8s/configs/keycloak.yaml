@@ -5,7 +5,12 @@ metadata:
   annotations:
     ingressClassName: "traefik"
     kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  tls:
+    - secretName: auth-tls
+      hosts:
+        - auth.kuzznya.space
   rules:
     - host: auth.kuzznya.space
       http:
@@ -56,6 +61,8 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:15.0.2
           env:
+            - name: KEYCLOAK_FRONTEND_URL
+              value: https://auth.kuzznya.space/auth
             - name: KEYCLOAK_USER
               value: admin
             - name: KEYCLOAK_PASSWORD

@@ -6,6 +6,10 @@ metadata:
     ingressClassName: "traefik"
     kubernetes.io/ingress.class: "traefik"
 spec:
+  tls:
+    - secretName: main-tls
+      hosts:
+        - timepicker.kuzznya.space
   rules:
     - host: timepicker.kuzznya.space
       http:
@@ -66,7 +70,12 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: kafka:9092
             - name: KEYCLOAK_URL
-              value: http://auth.kuzznya.space/auth/realms/timepicker
+              value: https://auth.kuzznya.space/auth/realms/timepicker
+            - name: KEYCLOAK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: KEYCLOAK_SECRET
           livenessProbe:
             httpGet:
               port: 8080

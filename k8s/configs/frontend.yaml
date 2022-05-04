@@ -5,7 +5,12 @@ metadata:
   annotations:
     ingressClassName: "traefik"
     kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  tls:
+    - secretName: main-tls
+      hosts:
+        - timepicker.kuzznya.space
   rules:
     - host: timepicker.kuzznya.space
       http:
@@ -59,8 +64,8 @@ spec:
             - name: PORT
               value: "8080"
             - name: ENV_API_PATH
-              value: "http://timepicker.kuzznya.space"
+              value: "https://timepicker.kuzznya.space"
             - name: ENV_AUTH_PATH
-              value: "http://auth.kuzznya.space"
+              value: "https://auth.kuzznya.space"
           ports:
             - containerPort: 8080
