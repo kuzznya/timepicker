@@ -25,6 +25,33 @@ spec:
 
 ---
 
+# copy of keycloak-ingress with 'web' entrypoint and 'default-redirect' middleware to redirect http to https
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress-redirect
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  tls:
+    - secretName: auth-tls
+      hosts:
+        - auth.kuzznya.space
+  rules:
+    - host: auth.kuzznya.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+
+---
+
 apiVersion: v1
 kind: Service
 metadata:

@@ -6,6 +6,35 @@ metadata:
     ingressClassName: "traefik"
     kubernetes.io/ingress.class: "traefik"
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  tls:
+    - secretName: main-tls
+      hosts:
+        - timepicker.kuzznya.space
+  rules:
+    - host: timepicker.kuzznya.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+---
+
+# copy of frontend-ingress with 'web' entrypoint and 'default-redirect' middleware to redirect http to https
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress-redirect
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   tls:
     - secretName: main-tls
