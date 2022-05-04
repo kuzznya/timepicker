@@ -3,7 +3,9 @@
     <b-card>
       <h2>{{ title }}</h2>
 
-      <p class="font-weight-bold">Author: @{{ author }}</p>
+      <p class="font-weight-bold">
+        Author: <router-link class="text-dark" :to="'/users/' + author">@{{ author }}</router-link>
+      </p>
 
       <b-row>
         <b-col>
@@ -34,10 +36,13 @@
           />
         </b-row>
 
-        <b-row>
+        <b-row v-if="bestDates.length > 0">
           <b-col>
-            <p class="lead">The best day for the event is<br/>
-              <b class="font-weight-bold" @click="showParticipants(bestDate)">{{ bestDate }}</b>
+            <p class="lead">{{ bestDates.length === 1 ? "The best day for the event is" : "The best days for the event are"}}<br/>
+              <span v-for="(date, idx) in bestDates" :key="date">
+                <b-link class="font-weight-bold" @click="showParticipants(date)">{{ date }}</b-link>
+                <span v-if="idx < bestDates.length - 1">, </span>
+              </span>
             </p>
           </b-col>
         </b-row>
@@ -47,9 +52,9 @@
     <b-modal id="participants-modal" :ok-disabled="true" :cancel-disabled="true" :hide-footer="true">
       <b-card-title>Participants on {{ selectedResultDate }}</b-card-title>
       <b-card-body>
-        <b-link v-for="participant in participants" :key="participant.username" :to="`/users/${participant.username}`">
+        <b-link v-for="username in participants" :key="username" :to="`/users/${username}`" class="text-dark">
           <b-row>
-            {{ participant.name }} {{ participant.surname }} (@{{ participant.username }})
+             @{{ username }}
           </b-row>
         </b-link>
       </b-card-body>
@@ -102,26 +107,10 @@ export default {
       datasets: [ { data: [8, 3, 15, 6] } ]
     },
 
-    bestDate: null,
+    bestDates: [],
 
     selectedResultDate: String,
-    participants: [
-      {
-        name: 'Ilya',
-        surname: 'Kuznetsov',
-        username: 'kuzznya'
-      },
-      {
-        name: 'Max',
-        surname: 'Golish',
-        username: 'afterbvrner'
-      },
-      {
-        name: 'Gamzat',
-        surname: 'Gadgimagomedov',
-        username: 'xaghoul'
-      }
-    ]
+    participants: []
   }),
 
   created() {
@@ -157,7 +146,6 @@ export default {
       const event = await events.getEventInfo(this.id)
       this.title = event.title
       this.author = event.author
-      console.log(event)
       this.dateRange = {
         start: new Date(event.minDate),
         end: new Date(event.maxDate)
@@ -177,7 +165,7 @@ export default {
     processStatistics(stats) {
       if (stats == null) {
         stats = {}
-        this.bestDate = null
+        this.bestDates = []
         return
       }
       const sorted = Object.entries(stats).sort((v1, v2) => v1[0].localeCompare(v2[0]))
@@ -189,7 +177,12 @@ export default {
           }
         ]
       }
-      this.bestDate = Object.keys(stats).sort(date => stats[date])[0]
+      const maxVotes = Object.values(stats)
+        .sort((v1, v2) => v1 - v2)
+        .reverse()[0]
+      this.bestDates = Object.keys(stats)
+        .sort()
+        .filter(date => stats[date] === maxVotes)
     },
 
     processSelectedDates(dates) {
@@ -251,8 +244,12 @@ export default {
       await events.changeDates(this.id, range.start, range.end)
     },
 
-    showParticipants(date) {
+    async showParticipants(date) {
       this.selectedResultDate = date
+      const allVotes = await votes.getAllVotes(this.id)
+      this.participants = allVotes
+        .filter(vote => vote.date === date)
+        .map(vote => vote.username)
       this.$bvModal.show('participants-modal')
     },
 

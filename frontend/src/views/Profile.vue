@@ -5,8 +5,8 @@
         <b-icon-person-circle font-scale="5"/>
       </template>
 
-      <b-card-text>Username: {{ profile.username }}</b-card-text>
-      <b-card-text>Email: {{ profile.email }}</b-card-text>
+      <b-card-text>Username: {{ username }}</b-card-text>
+      <b-card-text>Email: {{ email }}</b-card-text>
     </b-card>
   </b-container>
 </template>
@@ -15,19 +15,24 @@
 export default {
   name: "Profile",
 
+  props: {
+    username: String
+  },
+
   data: () => ({
-    profile: {
-      email: "",
-      username: ""
-    }
+    email: ""
   }),
 
   async mounted() {
-    this.profile = await this.$keycloak.loadUserProfile()
+    const profile = await this.$keycloak.loadUserProfile()
+    if (this.username === profile.username)
+      this.email = profile.email
   },
 
   async beforeUpdate() {
-    this.profile = await this.$keycloak.loadUserProfile()
+    const profile = await this.$keycloak.loadUserProfile()
+    if (this.username === profile.username)
+      this.email = profile.email
   }
 }
 </script>

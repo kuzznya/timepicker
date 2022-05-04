@@ -15,7 +15,7 @@
           <b-icon-person/>
         </template>
 
-        <b-dropdown-item to="/profile">
+        <b-dropdown-item :to="profileLink">
           <b-icon-person-badge/>
           Profile
         </b-dropdown-item>
@@ -35,6 +35,10 @@ export default {
   computed: {
     authenticated() {
       return this.$keycloak.authenticated
+    },
+
+    profileLink() {
+      return '/users/' + this.$keycloak.userName ?? ''
     }
   },
 

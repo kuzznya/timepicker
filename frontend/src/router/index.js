@@ -13,9 +13,12 @@ const routes = [
     component: Home
   },
   {
-    path: '/profile',
+    path: '/users/:username',
     name: 'Profile',
     component: Profile,
+    props: route => ({
+      username: route.params.username
+    }),
     meta: {
       secured: true
     }

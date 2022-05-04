@@ -4,5 +4,7 @@ export default {
 
   getUserVotes: async (eventId) => await axios.get(`/api/votes/${eventId}`).then(response => response.data),
 
+  getAllVotes: async (eventId) => await axios.get(`/api/votes/${eventId}/all`).then(response => response.data),
+
   getStatistics: async (eventId) => await axios.get(`/api/votes/${eventId}/stats`).then(response => response.data)
 }
