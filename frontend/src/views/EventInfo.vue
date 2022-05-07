@@ -213,6 +213,13 @@ export default {
             this.processStatistics(stats)
             break;
           }
+          case "EVENT_UPDATE": {
+            this.title = data.title
+            this.dateRange = {
+              start: data.minDate,
+              end: data.maxDate
+            }
+          }
         }
       }
 
