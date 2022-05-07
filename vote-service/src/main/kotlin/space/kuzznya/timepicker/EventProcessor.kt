@@ -16,6 +16,7 @@ class EventProcessor(
         val eventUpdate = data.mapTo(EventUpdate::class.java)
         val event = Event(eventUpdate.id, eventUpdate.minDate, eventUpdate.maxDate)
         eventDao.save(event).awaitSuspending()
-        voteDao.deleteVotesOutOfBounds(event.id, event.minDate, event.maxDate).awaitSuspending()
+        voteDao.deleteVotesBefore(event.id, event.minDate).awaitSuspending()
+        voteDao.deleteVotesAfter(event.id, event.maxDate).awaitSuspending()
     }
 }

@@ -12,10 +12,15 @@ CREATE TABLE IF NOT EXISTS events.event(
 
 CREATE KEYSPACE IF NOT EXISTS votes WITH replication = {'class':'SimpleStrategy','replication_factor':'1'};
 
-DROP TABLE votes.vote;
 CREATE TABLE IF NOT EXISTS votes.vote(
     event_id uuid,
     username text,
     date date,
     PRIMARY KEY ( (event_id, username, date) )
+);
+
+CREATE TABLE votes.event (
+    id uuid primary key,
+    min_date date,
+    max_date date
 );
