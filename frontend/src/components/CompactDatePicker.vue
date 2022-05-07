@@ -5,7 +5,7 @@
         <input
           :value="inputValue.start"
           v-on="inputEvents.start"
-          size="10"
+          style="width: 12ch;"
           class="border px-2 py-1 rounded-left focus:outline-none focus:border-indigo-300"
         />
 
@@ -16,7 +16,7 @@
         <input
           :value="inputValue.end"
           v-on="inputEvents.end"
-          size="10"
+          style="width: 12ch;"
           class="border px-2 py-1 rounded-right focus:outline-none focus:border-indigo-300"
         />
       </b-button-group>
