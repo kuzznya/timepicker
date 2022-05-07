@@ -18,7 +18,7 @@ class EventProcessor(
     private val voteDao: VoteDao,
     private val voteProcessor: VoteProcessor,
     private val statsPublisher: StatisticsPublisher,
-    @Channel("user-votes")
+    @Channel("event-user-votes")
     private val userVoteEmitter: Emitter<UserVotes>
 ) {
 
