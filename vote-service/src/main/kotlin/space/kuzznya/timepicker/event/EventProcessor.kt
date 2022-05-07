@@ -7,7 +7,6 @@ import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import space.kuzznya.timepicker.StatisticsPublisher
-import space.kuzznya.timepicker.UserVotes
 import space.kuzznya.timepicker.VoteDao
 import space.kuzznya.timepicker.VoteProcessor
 import javax.enterprise.context.ApplicationScoped
@@ -18,7 +17,7 @@ class EventProcessor(
     private val voteDao: VoteDao,
     private val voteProcessor: VoteProcessor,
     private val statsPublisher: StatisticsPublisher,
-    @Channel("event-user-votes")
+    @Channel("user-votes")
     private val userVoteEmitter: Emitter<JsonObject>
 ) {
 
