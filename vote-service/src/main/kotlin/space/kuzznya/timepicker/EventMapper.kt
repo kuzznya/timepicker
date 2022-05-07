@@ -4,7 +4,7 @@ import com.datastax.oss.driver.api.mapper.annotations.DaoFactory
 import com.datastax.oss.driver.api.mapper.annotations.Mapper
 
 @Mapper
-interface VoteMapper {
+interface EventMapper {
     @DaoFactory
     fun reactiveVoteDao(): VoteDao
 }
