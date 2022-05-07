@@ -81,6 +81,7 @@ mp:
       user-votes:
         connector: smallrye-kafka
         topic: user-votes
+        merge: true
       statistics:
         connector: smallrye-kafka
         topic: statistics
