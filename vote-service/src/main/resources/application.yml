@@ -84,14 +84,14 @@ mp:
         key:
           serializer: org.apache.kafka.common.serialization.StringSerializer
         value:
-          serializer: io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
+          serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
       event-user-votes:
         connector: smallrye-kafka
         topic: user-votes
         key:
           serializer: org.apache.kafka.common.serialization.StringSerializer
         value:
-          serializer: io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
+          serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
       statistics:
         connector: smallrye-kafka
         topic: statistics
