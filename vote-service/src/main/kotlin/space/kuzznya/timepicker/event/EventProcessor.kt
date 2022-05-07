@@ -19,7 +19,7 @@ class EventProcessor(
     private val voteProcessor: VoteProcessor,
     private val statsPublisher: StatisticsPublisher,
     @Channel("event-user-votes")
-    private val userVoteEmitter: Emitter<UserVotes>
+    private val userVoteEmitter: Emitter<JsonObject>
 ) {
 
     @Incoming("events")
@@ -40,7 +40,7 @@ class EventProcessor(
             .distinct()
             .forEach { username ->
                 val userVotes = voteProcessor.aggregateUserVotes(username, event.id)
-                userVoteEmitter.send(userVotes).await()
+                userVoteEmitter.send(JsonObject.mapFrom(userVotes)).await()
             }
         statsPublisher.publishStats(event.id)
     }
