@@ -11,12 +11,14 @@ import org.eclipse.microprofile.reactive.messaging.Message
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.LocalDate
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class VoteProcessor(
     private val voteDao: VoteDao,
+    private val eventDao: EventDao,
     @Channel("statistics")
     private val statsEmitter: Emitter<JsonObject>
 ) {
@@ -30,8 +32,17 @@ class VoteProcessor(
     suspend fun process(voteData: Message<JsonObject>): Message<JsonObject> {
         val vote = voteData.payload.mapTo(Vote::class.java)
         log.info("Vote received: $vote")
-        if (voteData.payload.getValue("state") == VoteState.VOTED.name) voteDao.save(vote).awaitSuspending()
-        else voteDao.delete(vote).awaitSuspending()
+        val event = eventDao.findById(vote.eventId)
+            .onItem().ifNull().continueWith { Event(vote.eventId, LocalDate.MIN, LocalDate.MAX) }
+            .awaitSuspending()
+        if (vote.date >= event.minDate && vote.date <= event.maxDate) {
+            if (voteData.payload.getValue("state") == VoteState.VOTED.name)
+                voteDao.save(vote).awaitSuspending()
+            else
+                voteDao.delete(vote).awaitSuspending()
+        } else {
+            log.warn("Vote ignored: date ${vote.date} is out of bounds ${event.minDate} - ${event.maxDate}")
+        }
         voteData.ackSuspending()
         publishStats(vote.eventId)
         val userVotes = aggregateUserVotes(vote.username, vote.eventId)

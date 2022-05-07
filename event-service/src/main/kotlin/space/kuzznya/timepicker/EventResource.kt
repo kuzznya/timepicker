@@ -1,7 +1,6 @@
 package space.kuzznya.timepicker
 
 import io.quarkus.security.Authenticated
-import io.smallrye.mutiny.Multi
 import org.eclipse.microprofile.jwt.JsonWebToken
 import java.util.UUID
 import javax.ws.rs.DELETE
@@ -19,7 +18,7 @@ class EventResource(
 ) {
 
     @POST
-    fun add(event: Event) = eventService.save(event, accessToken.name)
+    suspend fun add(event: Event) = eventService.save(event, accessToken.name)
 
     @PUT
     @Path("/{id}/dates")
@@ -28,12 +27,12 @@ class EventResource(
 
     @DELETE
     @Path("/{id}")
-    fun delete(@PathParam("id") id: UUID) = eventService.delete(id, accessToken.name)
+    suspend fun delete(@PathParam("id") id: UUID) = eventService.delete(id, accessToken.name)
 
     @GET
-    fun getAll(): Multi<Event> = eventService.findAllForParticipant(accessToken.name)
+    suspend fun getAll() = eventService.findAllForParticipant(accessToken.name)
 
     @GET
     @Path("/{id}")
-    fun getOne(@PathParam("id") id: UUID) = eventService.findOne(id, accessToken.name)
+    suspend fun getOne(@PathParam("id") id: UUID) = eventService.findOne(id, accessToken.name)
 }

@@ -66,6 +66,17 @@ mp:
           deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value:
           deserializer: io.vertx.kafka.client.serialization.JsonObjectDeserializer
+      events:
+        connector: smallrye-kafka
+        topic: events
+        group:
+          id: vote-service
+        client:
+          id: ${quarkus.uuid}
+        key:
+          deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value:
+          deserializer: io.vertx.kafka.client.serialization.JsonObjectDeserializer
     outgoing:
       user-votes:
         connector: smallrye-kafka

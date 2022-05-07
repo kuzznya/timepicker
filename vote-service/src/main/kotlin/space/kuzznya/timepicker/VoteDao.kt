@@ -6,6 +6,7 @@ import com.datastax.oss.driver.api.mapper.annotations.Insert
 import com.datastax.oss.driver.api.mapper.annotations.Select
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.Uni
+import java.time.LocalDate
 import java.util.UUID
 
 @Dao
@@ -22,5 +23,11 @@ interface VoteDao {
 
     @Select(customWhereClause = "username = :username AND event_id = :eventId", allowFiltering = true)
     fun findAllForUserAndEvent(username: String, eventId: UUID): Multi<Vote>
+
+    @Delete(
+        customWhereClause = "event_id = :eventId AND date < :minDate OR date > :maxDate",
+        entityClass = [Vote::class]
+    )
+    fun deleteVotesOutOfBounds(eventId: UUID, minDate: LocalDate, maxDate: LocalDate): Uni<Void>
 
 }

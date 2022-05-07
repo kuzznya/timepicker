@@ -1,8 +1,9 @@
 package space.kuzznya.timepicker
 
-import io.smallrye.mutiny.Multi
-import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.coroutines.awaitSuspending
+import kotlinx.coroutines.future.await
+import org.eclipse.microprofile.reactive.messaging.Channel
+import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -11,14 +12,16 @@ import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class EventService(
-    private val eventDao: EventDao
+    private val eventDao: EventDao,
+    @Channel("events")
+    private val eventEmitter: Emitter<EventUpdate>
 ) {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(EventService::class.java)
     }
 
-    fun save(event: Event, author: String): Uni<Void> {
+    suspend fun save(event: Event, author: String) {
         val newEvent = event.copy(
             id = UUID.randomUUID(),
             participant = author,
@@ -26,7 +29,8 @@ class EventService(
         )
         if (newEvent.minDate > newEvent.maxDate) throw RuntimeException("Min date cannot be more than max date")
         log.info("Creating event $newEvent")
-        return eventDao.save(newEvent)
+        eventDao.save(newEvent).awaitSuspending()
+        eventEmitter.send(EventUpdate(newEvent, EventUpdateStatus.CREATED)).await()
     }
 
     suspend fun updateDates(id: UUID, user: String, request: DateUpdateRequest): Event {
@@ -37,21 +41,26 @@ class EventService(
             .map { it.copy(minDate = request.minDate, maxDate = request.maxDate) }
             .call { event -> eventDao.save(event) }
             .collect().asList().awaitSuspending()
+        eventEmitter.send(EventUpdate(participantEvent, EventUpdateStatus.UPDATED)).await()
         return participantEvent
     }
 
-    fun delete(id: UUID, participant: String) = eventDao.delete(id, participant)
+    suspend fun delete(id: UUID, participant: String) = eventDao.delete(id, participant)
+        .awaitSuspending()
         .also { log.info("Event $id, participant $participant deleted") }
 
-    fun findOne(id: UUID, participant: String): Uni<Event> = eventDao.findByIdForParticipant(id, participant)
-        .invoke { event -> log.info("Retrieved event $event") }
-        .onItem().ifNull().switchTo {
-            eventDao.findById(id).toUni()
-                .onItem().ifNull().failWith { NotFoundException("Event $id not found") }
-                .map { it.copy(participant = participant) }
-                .call { event -> eventDao.save(event) }
-        }
+    suspend fun findOne(id: UUID, participant: String): Event =
+        eventDao.findByIdForParticipant(id, participant)
+            .invoke { event -> log.info("Retrieved event $event") }
+            .onItem().ifNull().switchTo {
+                eventDao.findById(id).toUni()
+                    .onItem().ifNull().failWith { NotFoundException("Event $id not found") }
+                    .map { it.copy(participant = participant) }
+                    .call { event -> eventDao.save(event) }
+            }.awaitSuspending()
 
-    fun findAllForParticipant(participant: String): Multi<Event> = eventDao.findByParticipant(participant)
-        .invoke { event -> log.info("Retrieved event $event (searching all for participant)") }
+    suspend fun findAllForParticipant(participant: String): List<Event> =
+        eventDao.findByParticipant(participant)
+            .invoke { event -> log.info("Retrieved event $event (searching all for participant)") }
+            .collect().asList().awaitSuspending()
 }
