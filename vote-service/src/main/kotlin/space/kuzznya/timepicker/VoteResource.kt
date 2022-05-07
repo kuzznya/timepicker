@@ -14,7 +14,7 @@ import javax.ws.rs.PathParam
 class VoteResource(
     private val accessToken: JsonWebToken,
     private val voteDao: VoteDao,
-    private val voteProcessor: VoteProcessor
+    private val statsPublisher: StatisticsPublisher
 ) {
 
     @GET
@@ -32,5 +32,5 @@ class VoteResource(
     @GET
     @Path("/{eventId}/stats")
     suspend fun getStatistics(@PathParam("eventId") eventId: UUID) =
-        voteProcessor.calculateStats(eventId)
+        statsPublisher.calculateStats(eventId)
 }
