@@ -41,7 +41,11 @@ class EventService(
             .map { it.copy(minDate = request.minDate, maxDate = request.maxDate) }
             .call { event -> eventDao.save(event) }
             .collect().asList().awaitSuspending()
-        eventEmitter.send(EventUpdate(participantEvent, EventUpdateStatus.UPDATED)).await()
+        val eventUpdate = EventUpdate(
+            participantEvent.copy(minDate = request.minDate, maxDate = request.maxDate),
+            EventUpdateStatus.UPDATED
+        )
+        eventEmitter.send(eventUpdate).await()
         return participantEvent
     }
 
