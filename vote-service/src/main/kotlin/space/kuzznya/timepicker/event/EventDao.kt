@@ -1,4 +1,4 @@
-package space.kuzznya.timepicker
+package space.kuzznya.timepicker.event
 
 import com.datastax.oss.driver.api.mapper.annotations.Dao
 import com.datastax.oss.driver.api.mapper.annotations.Insert

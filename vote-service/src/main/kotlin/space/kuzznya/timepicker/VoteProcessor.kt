@@ -3,14 +3,13 @@ package space.kuzznya.timepicker
 import io.quarkus.smallrye.reactivemessaging.ackSuspending
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import io.vertx.core.json.JsonObject
-import kotlinx.coroutines.future.await
-import org.eclipse.microprofile.reactive.messaging.Channel
-import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.eclipse.microprofile.reactive.messaging.Message
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import space.kuzznya.timepicker.event.Event
+import space.kuzznya.timepicker.event.EventDao
 import java.time.LocalDate
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
@@ -19,8 +18,7 @@ import javax.enterprise.context.ApplicationScoped
 class VoteProcessor(
     private val voteDao: VoteDao,
     private val eventDao: EventDao,
-    @Channel("statistics")
-    private val statsEmitter: Emitter<JsonObject>
+    private val statsPublisher: StatisticsPublisher
 ) {
 
     companion object {
@@ -44,23 +42,12 @@ class VoteProcessor(
             log.warn("Vote ignored: date ${vote.date} is out of bounds ${event.minDate} - ${event.maxDate}")
         }
         voteData.ackSuspending()
-        publishStats(vote.eventId)
+        statsPublisher.publishStats(vote.eventId)
         val userVotes = aggregateUserVotes(vote.username, vote.eventId)
         return Message.of(JsonObject.mapFrom(userVotes))
     }
 
-    suspend fun publishStats(event: UUID) {
-        val stats = calculateStats(event)
-        log.info("Statistics calculated: $stats")
-        statsEmitter.send(JsonObject.mapFrom(stats)).await()
-    }
-
-    suspend fun calculateStats(event: UUID): Statistics {
-        val votes = voteDao.findAllForEvent(event).collect().asList().awaitSuspending()
-        return Statistics(event, votes.groupingBy { it.date }.eachCount())
-    }
-
-    private suspend fun aggregateUserVotes(username: String, eventId: UUID): UserVotes =
+    suspend fun aggregateUserVotes(username: String, eventId: UUID): UserVotes =
         voteDao.findAllForUserAndEvent(username, eventId)
             .collect()
             .asList()
