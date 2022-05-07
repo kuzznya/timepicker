@@ -16,7 +16,11 @@ class EventProcessor(
         val eventUpdate = data.mapTo(EventUpdate::class.java)
         val event = Event(eventUpdate.id, eventUpdate.minDate, eventUpdate.maxDate)
         eventDao.save(event).awaitSuspending()
-        voteDao.deleteVotesBefore(event.id, event.minDate).awaitSuspending()
-        voteDao.deleteVotesAfter(event.id, event.maxDate).awaitSuspending()
+        voteDao.findAllBefore(event.id, event.minDate)
+            .onItem().call { vote -> voteDao.delete(vote) }
+            .collect().last().awaitSuspending()
+        voteDao.findAllAfter(event.id, event.maxDate)
+            .onItem().call { vote -> voteDao.delete(vote) }
+            .collect().last().awaitSuspending()
     }
 }

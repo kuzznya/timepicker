@@ -24,15 +24,9 @@ interface VoteDao {
     @Select(customWhereClause = "username = :username AND event_id = :eventId", allowFiltering = true)
     fun findAllForUserAndEvent(username: String, eventId: UUID): Multi<Vote>
 
-    @Delete(
-        customWhereClause = "event_id = :eventId AND date < :minDate",
-        entityClass = [Vote::class]
-    )
-    fun deleteVotesBefore(eventId: UUID, minDate: LocalDate): Uni<Void>
+    @Select(customWhereClause = "event_id = :eventId AND date < :minDate", allowFiltering = true)
+    fun findAllBefore(eventId: UUID, minDate: LocalDate): Multi<Vote>
 
-    @Delete(
-        customWhereClause = "event_id = :eventId AND date > :maxDate",
-        entityClass = [Vote::class]
-    )
-    fun deleteVotesAfter(eventId: UUID, maxDate: LocalDate): Uni<Void>
+    @Select(customWhereClause = "event_id = :eventId AND date > :maxDate", allowFiltering = true)
+    fun findAllAfter(eventId: UUID, maxDate: LocalDate): Multi<Vote>
 }
