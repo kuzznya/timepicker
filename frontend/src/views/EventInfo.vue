@@ -216,8 +216,8 @@ export default {
           case "EVENT_UPDATE": {
             this.title = data.title
             this.dateRange = {
-              start: data.minDate,
-              end: data.maxDate
+              start: new Date(data.minDate),
+              end: new Date(data.maxDate)
             }
           }
         }
