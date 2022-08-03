@@ -1,7 +1,0 @@
-configs:
-  ghcr.io:
-    auth:
-      username: ${GHCR_USERNAME}
-      password: ${GHCR_PASSWORD}
-    tls:
-      insecure_skip_verify: true
