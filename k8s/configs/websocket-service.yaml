@@ -70,7 +70,7 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: redpanda-cluster.default.svc.cluster.local:9092
             - name: KEYCLOAK_URL
-              value: https://auth.kuzznya.space/auth/realms/timepicker
+              value: https://auth.kuzznya.space/realms/timepicker
             - name: KEYCLOAK_SECRET
               valueFrom:
                 secretKeyRef:

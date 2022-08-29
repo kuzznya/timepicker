@@ -18,7 +18,7 @@ quarkus:
           policy: authenticated
           auth-mechanism: bearer
   oidc:
-    auth-server-url: ${KEYCLOAK_URL:http://localhost:8000/auth/realms/timepicker}
+    auth-server-url: ${KEYCLOAK_URL:http://localhost:8000/realms/timepicker}
     application-type: service
     client-id: timepicker-backend
     credentials:

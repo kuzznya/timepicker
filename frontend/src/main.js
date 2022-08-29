@@ -16,7 +16,7 @@ const apiHost = process.env.VUE_APP_AUTH_PATH || "ENV_AUTH_PATH"
 
 Vue.use(VueKeycloak, {
   config: {
-    url: `${apiHost}/auth`,
+    url: apiHost,
     realm: 'timepicker',
     clientId: 'timepicker-frontend'
   },
