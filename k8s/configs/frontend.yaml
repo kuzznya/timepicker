@@ -10,11 +10,11 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   tls:
-    - secretName: main-tls
+    - secretName: timepicker-tls
       hosts:
-        - timepicker.kuzznya.space
+        - timepicker.kuzznya.com
   rules:
-    - host: timepicker.kuzznya.space
+    - host: timepicker.kuzznya.com
       http:
         paths:
           - path: /
@@ -39,9 +39,9 @@ spec:
   tls:
     - secretName: main-tls
       hosts:
-        - timepicker.kuzznya.space
+        - timepicker.kuzznya.com
   rules:
-    - host: timepicker.kuzznya.space
+    - host: timepicker.kuzznya.com
       http:
         paths:
           - path: /
@@ -93,8 +93,8 @@ spec:
             - name: PORT
               value: "8080"
             - name: ENV_API_PATH
-              value: "https://timepicker.kuzznya.space"
+              value: "https://timepicker.kuzznya.com"
             - name: ENV_AUTH_PATH
-              value: "https://auth.kuzznya.space"
+              value: "https://auth.kuzznya.com"
           ports:
             - containerPort: 8080

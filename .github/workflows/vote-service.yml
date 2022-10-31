@@ -29,4 +29,4 @@ jobs:
       - name: Prepare kubeconfig
         run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
       - name: Deploy to Kubernetes
-        run: kubectl rollout restart deployment vote-service --namespace master
+        run: kubectl rollout restart deployment vote-service --namespace timepicker

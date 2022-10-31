@@ -47,7 +47,7 @@ spec:
             - name: CASSANDRA_PASSWORD_SEEDER
               value: 'yes'
             - name: CASSANDRA_HOST
-              value: "cassandra-0.cassandra.master.svc.cluster.local"
+              value: "cassandra-0.cassandra.timepicker.svc.cluster.local"
           ports:
             - containerPort: 9042
               name: cql

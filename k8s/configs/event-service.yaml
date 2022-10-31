@@ -7,11 +7,11 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
 spec:
   tls:
-    - secretName: main-tls
+    - secretName: timepicker-tls
       hosts:
-        - timepicker.kuzznya.space
+        - timepicker.kuzznya.com
   rules:
-    - host: timepicker.kuzznya.space
+    - host: timepicker.kuzznya.com
       http:
         paths:
           - path: /api/events
@@ -77,7 +77,7 @@ spec:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: redpanda-cluster.default.svc.cluster.local:9092
             - name: KEYCLOAK_URL
-              value: https://auth.kuzznya.space/realms/timepicker
+              value: https://auth.kuzznya.com/realms/timepicker
             - name: KEYCLOAK_SECRET
               valueFrom:
                 secretKeyRef:
